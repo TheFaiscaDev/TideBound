@@ -100,6 +100,7 @@ public partial class Player : CharacterBody2D, AttackInterface, IHook
 				{
 					GD.PushError("HealthComponent not found in enemy node.");
 					GD.Print("Player: Enemy does not have a HealthComponent.");
+					GD.Print("Player: Enemy does not have a HealthComponent.");
 				}
 			}
 			else
