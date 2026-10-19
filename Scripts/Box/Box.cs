@@ -2,49 +2,37 @@ using Godot;
 using System;
 
 
-public partial class Box : RigidBody2D, DamageableObject
+public partial class Box : RigidBody2D, IDamageable
 {
 	[Export] AnimationPlayer player;
-	private int health;
-	[Export] public int Health
-	{
-		get
-		{
-			return health;
-		}
-		set
-		{
+	[Export] public int Health { get; set; } = 1;
 
-			health = value;
-		}
-	}
 	private bool destroyed = false;
 
+	// --- IDamageable ---
 
-	public Box()
+	public void TakeDamage(int amount)
 	{
-		health = health != 0 ? health : 1; 
-		destroyed = false;
+		if (destroyed) return;
+		Health -= amount;
+		if (Health <= 0)
+		{
+			destroyed = true;
+			player.Play("destroyed");
+		}
 	}
 
-	public override void _Process(double delta)
+	public void ApplyKnockback(Vector2 sourcePosition, float force, float duration)
 	{
-		
-	}
-
-	public void Destroy()
-	{
-		player.Play("destroyed");
+		// RigidBody2D: aplicamos un impulso en vez de velocidad directa
+		Vector2 direction = (GlobalPosition - sourcePosition).Normalized();
+		ApplyImpulse(direction * force);
 	}
 
 	public void _on_animation_player_animation_finished(string anim_name){
 		if (anim_name == "destroyed")
 		{
 			this.QueueFree();
-			destroyed = true;
 		}
 	}
-
-
-
 }

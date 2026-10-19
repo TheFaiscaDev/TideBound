@@ -42,7 +42,7 @@ public partial class CompMov_Player : Node2D
 
 	private void Attack()
 	{
-		if (parent is AttackInterface parentAttack)
+		if (parent is IAttackable parentAttack)
 		{
 
 			if (Input.IsActionPressed("attack") && !parentAttack.IsAttacking)
@@ -112,7 +112,7 @@ public partial class CompMov_Player : Node2D
 			velocity.X = Mathf.Lerp(parent.Velocity.X, direction.X * speed, 14f * delta);
 			velocity.Y = 0;
 			canDoubleJump = true;
-			if (parent is AttackInterface parentAttack)
+			if (parent is IAttackable parentAttack)
 			{
 				if (direction.X != 0 && !parentAttack.IsAttacking)
 				{
@@ -150,12 +150,10 @@ public partial class CompMov_Player : Node2D
 				{
 					canDoubleJump = false; // Se usó el doble salto
 					fsm.Travel("jump"); // Puedes poner una animación especial si quieres
-					System.Console.WriteLine("Double Jump!");
 				}
 				else
 				{
 					fsm.Travel("jump");
-					System.Console.WriteLine("Jumping");
 				}
 			}
 		}
@@ -164,7 +162,6 @@ public partial class CompMov_Player : Node2D
 			animatedSprite.Scale = new Vector2(Mathf.Sign(direction.X), 1);
 
 		parent.Velocity = velocity;
-		System.Console.WriteLine($"Move Velocity: {velocity}");
 	}
 	
 }

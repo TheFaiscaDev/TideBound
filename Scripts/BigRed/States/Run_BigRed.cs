@@ -3,11 +3,11 @@ using System;
 
 public partial class Run_BigRed : State
 {
-    [Export] public Enemy enemy; // Ensure this is assigned in the inspector
-    // [Export] public RayCast2D raycast; // Keep if used elsewhere, otherwise remove
+    // El enemigo se obtiene del ControlledNode de la FSM (sin asignar en el inspector)
+    private Enemy enemy => GetControlledNode<Enemy>();
     [Export] public float speed = 100f; // Pixels per second
 
-    [Export] public RayCast2D raycast; // Keep if used elsewhere, otherwise remove
+    [Export] public RayCast2D raycast;
 
     private bool movingForward = true;
     private PathFollow2D pathFollow;
@@ -73,10 +73,11 @@ public partial class Run_BigRed : State
 
     public override void Exit()
     {
+        // Paramos el timer para que no dispare transiciones fuera del estado
+        GetNodeOrNull<Timer>("Timer")?.Stop();
         if (enemy is CharacterBody2D character)
         {
             character.Velocity = Vector2.Zero;
-
         }
     }
 
@@ -124,6 +125,7 @@ public partial class Run_BigRed : State
         Vector2 directionToTarget = targetPosition - currentPosition;
 
         // 4. Set the character's velocity towards the target
+        // (la clase base Enemy es la única que llama a MoveAndSlide)
         if (directionToTarget.Length() > 1.0f) // Only move if not already very close to the target point
         {
             // Move towards the target at the defined speed
@@ -133,9 +135,6 @@ public partial class Run_BigRed : State
         {
             character.Velocity = Vector2.Zero;
         }
-
-
-        character.MoveAndSlide(); // This handles collisions and actual movement
 
         if (movingForward && pathFollow.ProgressRatio >= (1f - PATH_END_TOLERANCE))
         {

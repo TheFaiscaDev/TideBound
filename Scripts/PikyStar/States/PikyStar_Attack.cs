@@ -3,8 +3,9 @@ using System;
 
 public partial class PikyStar_Attack : State
 {
-    [Export] public RayCast2D raycast; // Keep if used elsewhere, otherwise remove
-    [Export] public Enemy enemy; // Ensure this is assigned in the inspector
+    [Export] public RayCast2D raycast;
+    // El enemigo se obtiene del ControlledNode de la FSM (sin asignar en el inspector)
+    private Enemy enemy => GetControlledNode<Enemy>();
 
     [Export] public float velocity;
     public AnimationNodeStateMachinePlayback animationMachine;
@@ -19,7 +20,11 @@ public partial class PikyStar_Attack : State
 
         velocity = velocity == 0 ? 10.0f : velocity;
     }
-    public override void Exit() { }
+    public override void Exit()
+    {
+        // Paramos el timer para que no dispare transiciones fuera del estado
+        GetNodeOrNull<Timer>("Timer")?.Stop();
+    }
 
     public override void Update(float delta)
     {
@@ -27,15 +32,13 @@ public partial class PikyStar_Attack : State
     }
     public override void PhysicsUpdate(float delta)
     {
-
+        if (enemy.player == null)
+        {
+            return;
+        }
         Vector2 movementDirection = (enemy.player.GlobalPosition - enemy.GlobalPosition).Normalized();
         enemy.Velocity = new Vector2(movementDirection.X * velocity, enemy.Velocity.Y);
-        enemy.MoveAndSlide(); 
-        // if (raycast.IsColliding() && raycast.GetCollider() is Player player)
-        // {
-        //     GD.Print("ENEMY: Attack State - Raycast Collided with Player");
-        //     player.CallDeferred("ApplyPushback", enemy.GlobalPosition, enemy.PushForce, enemy.PushDuration);
-        // }
+        // La clase base Enemy es la única que llama a MoveAndSlide
     }
     public override void HandleInput(InputEvent @event) { }
 

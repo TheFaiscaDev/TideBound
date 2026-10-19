@@ -11,11 +11,13 @@ public partial class Camera : Camera2D
 	public float ZoomDuration = 1.0f;
 
 	private Tween _zoomTween; // Para gestionar la animación suave del zoom
+	private CharacterBody2D _player; // Referencia cacheada al jugador
 
 	public override void _Ready()
 	{
 		// Aseguramos que el zoom inicial es el por defecto
 		Zoom = DefaultZoom;
+		_player = GetTree().GetFirstNodeInGroup("Player") as CharacterBody2D;
 	}
 
 	// Este método será llamado por los triggers para solicitar un cambio de zoom
@@ -49,10 +51,12 @@ public partial class Camera : Camera2D
 
 	public override void _Process(double delta)
 	{
-		CharacterBody2D player = GetTree().GetNodesInGroup("Player")[0] as CharacterBody2D;
-		Vector2 position =  GlobalPosition;
-		position = player.GlobalPosition;
-		position.Y = player.GlobalPosition.Y-20;
+		if (_player == null || !GodotObject.IsInstanceValid(_player))
+		{
+			return;
+		}
+		Vector2 position = _player.GlobalPosition;
+		position.Y -= 20;
 		GlobalPosition = position;
 	}
 }

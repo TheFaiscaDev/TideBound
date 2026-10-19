@@ -572,10 +572,9 @@ position = Vector2(24, 13)
 rotation = 3.14159
 loop = false
 
-[node name="BigRed" parent="Enemies/Path2D/PathFollow2D" node_paths=PackedStringArray("player") instance=ExtResource("14_67y36")]
+[node name="BigRed" parent="Enemies/Path2D/PathFollow2D" instance=ExtResource("14_67y36")]
 position = Vector2(0, 8)
 rotation = 3.14159
-player = NodePath("../../../../Player")
 
 [node name="Path2D9" type="Path2D" parent="Enemies"]
 position = Vector2(1399, -327)
@@ -586,10 +585,9 @@ position = Vector2(24, 13)
 rotation = 3.14159
 loop = false
 
-[node name="BigRed" parent="Enemies/Path2D9/PathFollow2D" node_paths=PackedStringArray("player") instance=ExtResource("14_67y36")]
+[node name="BigRed" parent="Enemies/Path2D9/PathFollow2D" instance=ExtResource("14_67y36")]
 position = Vector2(0, 8)
 rotation = 3.14159
-player = NodePath("../../../../Player")
 
 [node name="Path2D10" type="Path2D" parent="Enemies"]
 position = Vector2(952, -328)
@@ -601,10 +599,9 @@ position = Vector2(24, 13)
 rotation = 3.14159
 loop = false
 
-[node name="BigRed" parent="Enemies/Path2D10/PathFollow2D" node_paths=PackedStringArray("player") instance=ExtResource("14_67y36")]
+[node name="BigRed" parent="Enemies/Path2D10/PathFollow2D" instance=ExtResource("14_67y36")]
 position = Vector2(0, 8)
 rotation = 3.14159
-player = NodePath("../../../../Player")
 
 [node name="Path2D7" type="Path2D" parent="Enemies"]
 position = Vector2(1966, -165)
@@ -615,10 +612,9 @@ position = Vector2(24, 13)
 rotation = 3.14159
 loop = false
 
-[node name="BigRed" parent="Enemies/Path2D7/PathFollow2D" node_paths=PackedStringArray("player") instance=ExtResource("14_67y36")]
+[node name="BigRed" parent="Enemies/Path2D7/PathFollow2D" instance=ExtResource("14_67y36")]
 position = Vector2(0, 8)
 rotation = 3.14159
-player = NodePath("../../../../Player")
 
 [node name="Path2D8" type="Path2D" parent="Enemies"]
 position = Vector2(2164, -327)
@@ -629,10 +625,9 @@ position = Vector2(24, 13)
 rotation = 3.14159
 loop = false
 
-[node name="BigRed" parent="Enemies/Path2D8/PathFollow2D" node_paths=PackedStringArray("player") instance=ExtResource("14_67y36")]
+[node name="BigRed" parent="Enemies/Path2D8/PathFollow2D" instance=ExtResource("14_67y36")]
 position = Vector2(0, 8)
 rotation = 3.14159
-player = NodePath("../../../../Player")
 
 [node name="Path2D2" type="Path2D" parent="Enemies"]
 position = Vector2(1664, 942)
@@ -643,10 +638,9 @@ position = Vector2(24, 13)
 rotation = 3.14159
 loop = false
 
-[node name="BigRed" parent="Enemies/Path2D2/PathFollow2D" node_paths=PackedStringArray("player") instance=ExtResource("14_67y36")]
+[node name="BigRed" parent="Enemies/Path2D2/PathFollow2D" instance=ExtResource("14_67y36")]
 position = Vector2(0, 8)
 rotation = 3.14159
-player = NodePath("../../../../Player")
 
 [node name="Path2D3" type="Path2D" parent="Enemies"]
 position = Vector2(1756, 945)
@@ -658,10 +652,9 @@ position = Vector2(24, 13)
 rotation = -3.13772
 loop = false
 
-[node name="BigRed" parent="Enemies/Path2D3/PathFollow2D" node_paths=PackedStringArray("player") instance=ExtResource("14_67y36")]
+[node name="BigRed" parent="Enemies/Path2D3/PathFollow2D" instance=ExtResource("14_67y36")]
 position = Vector2(0, 8)
 rotation = 3.14159
-player = NodePath("../../../../Player")
 
 [node name="Path2D4" type="Path2D" parent="Enemies"]
 position = Vector2(1798, 181)
@@ -673,9 +666,7 @@ position = Vector2(24, 13)
 rotation = -3.13664
 loop = false
 
-[node name="PinkyStar" parent="Enemies/Path2D4/PathFollow2D" node_paths=PackedStringArray("player") instance=ExtResource("14_et44u")]
-Health = 5
-player = NodePath("../../../../Player")
+[node name="PinkyStar" parent="Enemies/Path2D4/PathFollow2D" instance=ExtResource("14_et44u")]
 
 [node name="Path2D5" type="Path2D" parent="Enemies"]
 position = Vector2(2081, 188)
@@ -687,10 +678,8 @@ position = Vector2(24, 13)
 rotation = 3.14159
 loop = false
 
-[node name="PinkyStar" parent="Enemies/Path2D5/PathFollow2D" node_paths=PackedStringArray("player") instance=ExtResource("14_et44u")]
+[node name="PinkyStar" parent="Enemies/Path2D5/PathFollow2D" instance=ExtResource("14_et44u")]
 position = Vector2(1, 6)
-Health = 5
-player = NodePath("../../../../Player")
 
 [node name="Path2D6" type="Path2D" parent="Enemies"]
 position = Vector2(2085, -211)
@@ -702,10 +691,8 @@ position = Vector2(24, 13)
 rotation = 3.14159
 loop = false
 
-[node name="PinkyStar" parent="Enemies/Path2D6/PathFollow2D" node_paths=PackedStringArray("player") instance=ExtResource("14_et44u")]
+[node name="PinkyStar" parent="Enemies/Path2D6/PathFollow2D" instance=ExtResource("14_et44u")]
 position = Vector2(1, 6)
-Health = 5
-player = NodePath("../../../../Player")
 
 [node name="Path2D12" type="Path2D" parent="Enemies"]
 position = Vector2(343, -118)
@@ -717,10 +704,8 @@ position = Vector2(24, 13)
 rotation = 3.14159
 loop = false
 
-[node name="PinkyStar" parent="Enemies/Path2D12/PathFollow2D" node_paths=PackedStringArray("player") instance=ExtResource("14_et44u")]
+[node name="PinkyStar" parent="Enemies/Path2D12/PathFollow2D" instance=ExtResource("14_et44u")]
 position = Vector2(1, 6)
-Health = 5
-player = NodePath("../../../../Player")
 
 [node name="Path2D11" type="Path2D" parent="Enemies"]
 position = Vector2(1112, -327)
@@ -732,10 +717,8 @@ position = Vector2(24, 13)
 rotation = 3.14159
 loop = false
 
-[node name="PinkyStar" parent="Enemies/Path2D11/PathFollow2D" node_paths=PackedStringArray("player") instance=ExtResource("14_et44u")]
+[node name="PinkyStar" parent="Enemies/Path2D11/PathFollow2D" instance=ExtResource("14_et44u")]
 position = Vector2(1, 6)
-Health = 5
-player = NodePath("../../../../Player")
 
 [node name="Path2D13" type="Path2D" parent="Enemies"]
 position = Vector2(1352, 943)
@@ -747,10 +730,8 @@ position = Vector2(24, 13)
 rotation = 3.14159
 loop = false
 
-[node name="PinkyStar" parent="Enemies/Path2D13/PathFollow2D" node_paths=PackedStringArray("player") instance=ExtResource("14_et44u")]
+[node name="PinkyStar" parent="Enemies/Path2D13/PathFollow2D" instance=ExtResource("14_et44u")]
 position = Vector2(1, 6)
-Health = 5
-player = NodePath("../../../../Player")
 
 [node name="cursor" type="StaticBody2D" parent="."]
 collision_layer = 2

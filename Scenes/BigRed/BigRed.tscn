@@ -14,6 +14,7 @@
 [ext_resource type="Script" uid="uid://bwy6eusbqu1xq" path="res://Scripts/BigRed/States/Hit_BigRed.cs" id="12_x8t3y"]
 [ext_resource type="PackedScene" uid="uid://bbaxyok1ocfum" path="res://Scenes/DamageComponent/damage_component.tscn" id="13_md1id"]
 [ext_resource type="Script" uid="uid://du6lygry8rxjj" path="res://Scenes/HealthComponent/HealthComponent.cs" id="14_x8t3y"]
+[ext_resource type="Script" path="res://Scripts/Components/KnockbackComponent.cs" id="20_kbck"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n6bhy"]
 size = Vector2(16.0681, 22)
@@ -352,7 +353,6 @@ colors = PackedColorArray(1, 0, 0, 1, 1, 0.45098, 0.0784314, 1)
 z_index = -1
 collision_layer = 4
 script = ExtResource("1_nsvnc")
-Health = 5
 damage = 2.0
 collisionShape = NodePath("CollisionShape2D")
 animatedSprite = NodePath("AnimatedSprite2D")
@@ -386,34 +386,30 @@ libraries = {
 InitialState = NodePath("Run")
 ControlledNode = NodePath("..")
 
-[node name="Idle" type="Node" parent="FSM" node_paths=PackedStringArray("raycast", "enemy")]
+[node name="Idle" type="Node" parent="FSM" node_paths=PackedStringArray("raycast")]
 script = ExtResource("9_n2wvx")
 raycast = NodePath("../../AnimatedSprite2D/RayCast2D")
-enemy = NodePath("../..")
 
 [node name="Timer" type="Timer" parent="FSM/Idle"]
 wait_time = 2.0
 
-[node name="Run" type="Node" parent="FSM" node_paths=PackedStringArray("enemy", "raycast") groups=["Enemy"]]
+[node name="Run" type="Node" parent="FSM" node_paths=PackedStringArray("raycast") groups=["Enemy"]]
 script = ExtResource("10_x8t3y")
-enemy = NodePath("../..")
 speed = 67.69
 raycast = NodePath("../../AnimatedSprite2D/RayCast2D")
 
 [node name="Timer" type="Timer" parent="FSM/Run"]
 wait_time = 5.0
 
-[node name="Attack" type="Node" parent="FSM" node_paths=PackedStringArray("raycast", "enemy")]
+[node name="Attack" type="Node" parent="FSM" node_paths=PackedStringArray("raycast")]
 script = ExtResource("12_bf4sq")
 raycast = NodePath("../../AnimatedSprite2D/RayCast2D")
-enemy = NodePath("../..")
 
 [node name="Timer" type="Timer" parent="FSM/Attack"]
 wait_time = 2.0
 
-[node name="Hit" type="Node" parent="FSM" node_paths=PackedStringArray("enemy")]
+[node name="Hit" type="Node" parent="FSM"]
 script = ExtResource("12_x8t3y")
-enemy = NodePath("../..")
 
 [node name="Timer" type="Timer" parent="FSM/Hit"]
 wait_time = 0.5
@@ -432,6 +428,9 @@ shape = SubResource("RectangleShape2D_2i8pw")
 script = ExtResource("14_x8t3y")
 Health = 5
 metadata/_custom_type_script = "uid://du6lygry8rxjj"
+
+[node name="KnockbackComponent" type="Node" parent="."]
+script = ExtResource("20_kbck")
 
 [node name="CPUParticles2D" type="CPUParticles2D" parent="."]
 position = Vector2(0, 6)

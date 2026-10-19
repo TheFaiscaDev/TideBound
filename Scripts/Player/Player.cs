@@ -2,7 +2,7 @@ using System;
 using Godot;
 
 
-public partial class Player : CharacterBody2D, AttackInterface, IHook
+public partial class Player : CharacterBody2D, IAttackable, IHook, IDamageable
 {
 	private bool isAttacking = false;
 	public bool IsAttacking { get => isAttacking; set => isAttacking = value; }
@@ -15,18 +15,13 @@ public partial class Player : CharacterBody2D, AttackInterface, IHook
 	private bool skipGravityFrame = false;
 	public bool SkipGravityFrame { get => skipGravityFrame; set => skipGravityFrame = value; }
 
-	[Export] public float PushForce = 200.0f; // Fuerza del tirón hacia atrás
-	[Export] public float PushDuration = 0.2f; // Duración del tirón en segundos
+	[Export] public float PushForce = 200.0f; // Fuerza de retroceso que la espada aplica a los enemigos
+	[Export] public float PushDuration = 0.2f; // Duración del retroceso aplicado a los enemigos
 
-	private bool _isBeingPushed = false;
-	private Vector2 _pushDirection = Vector2.Zero;
-	private float _pushTimer = 0.0f;
-	private Vector2 _velocity = Vector2.Zero; // Mantén un registro de la velocidad normal del jugador
 	[Export] public AnimationTree animationTree;
 	public AnimationNodeStateMachinePlayback fsm;
 	private HealthComponent _healthComponent;
-	private float _currentPushForce = 0.0f;
-	private float _currentPushDuration = 0.0f;
+	private KnockbackComponent _knockback;
 	public Timer _waterCooldown;
 
 	private bool died = false;
@@ -35,15 +30,25 @@ public partial class Player : CharacterBody2D, AttackInterface, IHook
 
 	public override void _Ready()
 	{
-
-		progressBar = GetNode<TextureProgressBar>("/root/Level1/Menu/UI/TextureProgressBar");
 		fsm = (AnimationNodeStateMachinePlayback)animationTree.Get("parameters/playback");
 		_healthComponent = GetNodeOrNull<HealthComponent>("HealthComponent");
 		if (_healthComponent == null)
 		{
 			GD.PushError("HealthComponent not found in Player node.");
 		}
+		_knockback = GetNodeOrNull<KnockbackComponent>("KnockbackComponent");
 		_waterCooldown = GetNodeOrNull<Timer>("WaterCooldown");
+		// La UI se registra en el UIManager después del _Ready del jugador
+		CallDeferred(MethodName.InitHealthBar);
+	}
+
+	private void InitHealthBar()
+	{
+		progressBar = GetNodeOrNull<UIManager>("/root/UIManager")?.HealthBar;
+		if (progressBar != null && _healthComponent != null)
+		{
+			progressBar.Value = _healthComponent.Health;
+		}
 	}
 
 	/**
@@ -53,61 +58,20 @@ public partial class Player : CharacterBody2D, AttackInterface, IHook
 	 */
 	public void _on_sword_hit_area_entered(Area2D area)
 	{
-		if (area is DamageComponent)
+		// El DamageComponent es la hurtbox: el objetivo real es su padre
+		if (area is DamageComponent && area.GetParent() is IDamageable target)
 		{
-			DamageComponent hurt = (DamageComponent)area;
-			hurt.GetParent().CallDeferred("ApplyPushback", GlobalPosition, PushForce, PushDuration);
-			if (hurt.GetParent().HasNode("HealthComponent"))
-			{
-				HealthComponent targetHealth = hurt.GetParent().GetNode<HealthComponent>("HealthComponent");
-				if (targetHealth != null)
-				{
-					targetHealth.TakeDamage(1);
-				}
-				else
-				{
-					GD.PushError("HealthComponent not found in enemy node.");
-				}
-			}
-			else
-			{
-				GD.PushError("Enemy does not have a HealthComponent.");
-			}
+			target.ApplyKnockback(GlobalPosition, PushForce, PushDuration);
+			target.TakeDamage(1);
 		}
 	}
 	public void _on_sword_hit_body_entered(Node2D node)
 	{
-
-		if (node.IsInGroup("Enemy"))
+		if (node.IsInGroup("Enemy") && node is IDamageable target)
 		{
-			if (node.HasMethod("ApplyPushback"))
-			{
-				GD.Print("Player: Sword hit enemy, applying pushback.");
-				node.CallDeferred("ApplyPushback", GlobalPosition, PushForce, PushDuration);
-			}
-			else
-			{
-				GD.PushError("Enemy does not have ApplyPushback method.");
-			}
-			if (node.HasNode("HealthComponent"))
-			{
-				HealthComponent targetHealth = node.GetNode<HealthComponent>("HealthComponent");
-				if (targetHealth != null)
-				{
-					targetHealth.TakeDamage(1);
-				}
-				else
-				{
-					GD.PushError("HealthComponent not found in enemy node.");
-					GD.Print("Player: Enemy does not have a HealthComponent.");
-				}
-			}
-			else
-			{
-				GD.PushError("Enemy does not have a HealthComponent.");
-			}
+			target.ApplyKnockback(GlobalPosition, PushForce, PushDuration);
+			target.TakeDamage(1);
 		}
-
 	}
 
 
@@ -115,23 +79,12 @@ public partial class Player : CharacterBody2D, AttackInterface, IHook
 	{
 		if (died)
 		{
-			fsm.Travel("dead");
 			return;
 		}
 
-		if (_isBeingPushed)
+		if (_knockback != null && _knockback.TryComputeVelocity(delta, Velocity.Y, out Vector2 knockbackVelocity))
 		{
-			_velocity = new Vector2(_pushDirection.X * PushForce * 3, Mathf.Lerp(Velocity.Y, _pushDirection.Y * PushForce, 90f * (float)delta));
-
-			_pushTimer += (float)delta;
-			if (_pushTimer >= PushDuration) // Usa la duración base del jugador aquí
-			{
-				_isBeingPushed = false;
-				_pushTimer = 0.0f;
-				_velocity = Vector2.Zero;
-			}
-
-			Velocity = _velocity;
+			Velocity = knockbackVelocity;
 		}
 
 		MoveAndSlide();
@@ -164,29 +117,46 @@ public partial class Player : CharacterBody2D, AttackInterface, IHook
 	{
 		ApplyToxicEffect();
 	}
-	public void ApplyPushback(Vector2 sourcePosition, float force, float duration)
+	// --- IDamageable ---
+
+	public void TakeDamage(int amount)
 	{
-		_pushDirection = (GlobalPosition - sourcePosition).Normalized();
-		PushForce = force; // Sobreescribe la fuerza base con la del impacto
-		PushDuration = duration; // Sobreescribe la duración base con la del impacto
-		_isBeingPushed = true;
-		_pushTimer = 0.0f;
+		_healthComponent?.TakeDamage(amount);
+	}
+
+	public void ApplyKnockback(Vector2 sourcePosition, float force, float duration)
+	{
+		if (died) return;
+		_knockback?.Apply(sourcePosition, force, duration);
 		fsm.Travel("hit");
 	}
 
 	public void _on_health_component_object_destroyed()
 	{
+		if (died) return;
+
 		GetNode("MovementComponent").QueueFree();
 		GetNode("HookComponent").QueueFree();
 		GetNode("HurtBox").QueueFree();
 		this.SetCollisionMaskValue(3, false);
 		died = true;
+		fsm.Travel("dead");
 
+		// Tras la animación de muerte, recargamos la escena (respawn del jugador)
+		GetTree().CreateTimer(2.0).Timeout += () =>
+		{
+			if (GodotObject.IsInstanceValid(this))
+			{
+				GetTree().ReloadCurrentScene();
+			}
+		};
 	}
 	public void _on_health_component_health_changed(int newHealth)
 	{
-		GD.Print("Player: Health changed to " + newHealth);
-		progressBar.Value = newHealth;
+		if (progressBar != null)
+		{
+			progressBar.Value = newHealth;
+		}
 	}
 
 

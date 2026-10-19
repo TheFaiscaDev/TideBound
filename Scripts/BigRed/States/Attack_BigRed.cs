@@ -1,30 +1,30 @@
 using Godot;
 using System;
-using System.Numerics;
 
 public partial class Attack_BigRed : State
 {
-    [Export] public RayCast2D raycast; // Keep if used elsewhere, otherwise remove
-    [Export] public Enemy enemy; // Ensure this is assigned in the inspector
+    [Export] public RayCast2D raycast;
+    // El enemigo se obtiene del ControlledNode de la FSM (sin asignar en el inspector)
+    private Enemy enemy => GetControlledNode<Enemy>();
 
     public override void Enter() {
         enemy.animatedSprite.Play("attack");
         GetChild<Timer>(0).Start(); // Start the timer for the attack animation
     }
-    public override void Exit() { }
+    public override void Exit()
+    {
+        // Paramos el timer para que no dispare transiciones fuera del estado
+        GetNodeOrNull<Timer>("Timer")?.Stop();
+    }
 
     public override void Update(float delta) {
         
     }
     public override void PhysicsUpdate(float delta) {
-        if (raycast.IsColliding() && raycast.GetCollider() is Player player)
+        if (raycast.IsColliding() && raycast.GetCollider() is Player player && player is IDamageable target)
         {
-            player.CallDeferred("ApplyPushback", enemy.GlobalPosition, enemy.PushForce, enemy.PushDuration);
-            HealthComponent targetHealth = player.GetNodeOrNull<HealthComponent>("HealthComponent");
-            if (targetHealth != null)
-            {
-                targetHealth.TakeDamage(int.Parse(enemy.damage.ToString()));
-            }
+            target.ApplyKnockback(enemy.GlobalPosition, enemy.PushForce, enemy.PushDuration);
+            target.TakeDamage((int)enemy.damage);
         }
       }
     public override void HandleInput(InputEvent @event) { }

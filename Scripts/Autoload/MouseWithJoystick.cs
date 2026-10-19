@@ -78,6 +78,12 @@ public partial class MouseWithJoystick : Node
         {
             return;
         }
+
+        // El jugador puede haberse liberado al cambiar de escena: evitamos referencias colgadas
+        if (playerNode != null && !GodotObject.IsInstanceValid(playerNode))
+        {
+            playerNode = null;
+        }
         Vector2 joystickInput = GetJoystickMovement();
         Vector2 mouseDelta = Input.GetLastMouseVelocity();
 

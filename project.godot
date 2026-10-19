@@ -8,11 +8,15 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="Tidebound"
 run/main_scene="uid://c6dhjjxjfcuwb"
-config/features=PackedStringArray("4.4", "C#", "Forward Plus")
+config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 run/max_fps=60
 config/icon="res://icon.svg"
 
@@ -23,6 +27,8 @@ driver/mix_rate=48000
 [autoload]
 
 MouseWithJoystick="*res://Scripts/Autoload/MouseWithJoystick.cs"
+RespawnManager="*res://Scripts/Autoload/RespawnManager.cs"
+UIManager="*res://Scripts/Autoload/UIManager.cs"
 
 [display]
 
