@@ -1,18 +1,42 @@
-# 🏴‍☠️ Tidebound
+# 🏴‍☠️ TideBound
 
-Tidebound es un metroidvania en desarrollo con mecánicas de exploración, combate dinámico y plataformas. En este juego, el protagonista se embarca en una aventura en busca del tesoro perdido del legendario pirata Ronan "El Desatado" a través de un archipiélago lleno de secretos, rivales y trampas.
+Metroidvania 2D de piratas desarrollado en **Godot 4 (C#)**. El protagonista se embarca en una aventura en busca del tesoro perdido del legendario pirata Ronan "El Desatado" a través de un archipiélago lleno de secretos, rivales y trampas.
 
-## IDE de desarrollo
-  - Godot Engine 4.x
-  - Visual Studio Code
+> 📖 **Origen del proyecto:** TideBound nació como mi **Trabajo de Fin de Ciclo (TFC)**, desarrollado entre marzo y mayo de 2025. En **2026 he retomado el proyecto** para continuar su desarrollo, empezando por una refactorización completa del código y la arquitectura (ver [Registro 2026](#-registro-de-cambios--etapa-actual-2026)).
+
+## 🛠️ Desarrollo
+
+- **Motor:** Godot Engine 4.7 (.NET / C#)
+- **IDE:** Visual Studio Code
+- **Control de versiones:** Git + GitHub (flujo por ramas y Pull Requests)
 
 ## 🎮 Características
 
-- 🌊 Mundo interconectado con múltiples zonas por explorar.
-- ⚔️ Combate fluido con animaciones detalladas.
-- 🏃‍♂️ Mecánicas de plataformas avanzadas con coyote time, jump buffer y un sistema de salto mejorado.
-- 🔄 Viaje rápido entre checkpoints con un costo en monedas.
-- 🏝️ Habitaciones ocultas y misiones secundarias para incentivar la exploración.
+- 🌊 Zona tutorial jugable con fondos parallax, agua dinámica y agua tóxica con daño periódico.
+- ⚔️ Combate cuerpo a cuerpo con espada, retroceso (knockback) e invulnerabilidad temporal (i-frames).
+- 🏃‍♂️ Plataformas con *coyote time*, *jump buffer*, doble salto y control aéreo.
+- 🪝 Gancho con física de resorte (Hooke + damping) y cursor virtual usable con ratón y mando.
+- 👾 Enemigos con máquina de estados (patrulla, ataque, hit, muerte) y sistema de spawn/despawn/respawn por distancia.
+- 💰 Objetos interactivos: monedas, llave, cofre, cajas rompibles y pinchos con respawn del jugador.
+- 🎥 Zoom de cámara por zonas, fundidos de pantalla y HUD con vida, monedas y llave.
+
+## 🏗️ Arquitectura
+
+El código sigue una arquitectura de **componentes + herencia + interfaces** documentada en [**docs/GUIA_ARQUITECTURA.md**](docs/GUIA_ARQUITECTURA.md): cómo crear enemigos, objetos dañables, items y componentes paso a paso, con las convenciones del proyecto.
+
+## 📜 Registro de Cambios — Etapa actual (2026)
+
+### 🗓️ Octubre de 2026 — Retomada del proyecto: refactor completo (PRs #18 y #19)
+
+Tras retomar el proyecto, se realizó un análisis completo del código y una refactorización en 4 fases:
+
+- **Fase 1 — Bugs críticos**: gravedad de enemigos escalada por `delta`, muerte a `Health <= 0`, i-frames en `HealthComponent`, rotación del raycast del gancho corregida, eliminado doble `MoveAndSlide`, timers de estados parados en `Exit()`, eliminados logs de debug.
+- **Fase 2 — Spawn/Despawn/Respawn**: muerte real de enemigos (animación + despawn) y nuevo autoload `RespawnManager` que activa/desactiva enemigos por distancia y los respawnea cuando el jugador se aleja.
+- **Fase 3 — Arquitectura de componentes**: `KnockbackComponent` compartido por jugador y enemigos, interfaces `IDamageable`/`IAttackable` (daño type-safe), estados usando `fsm.ControlledNode`, autoload `UIManager` (eliminadas las rutas hardcodeadas), cajas rompibles con la espada.
+- **Fase 4 — Organización y convenciones**: estructura de `Scripts/` por dominio (`Actors/`, `Components/`, `Interfaces/`, `Items/`, `World/`...), convenciones C# en todo el código, eliminación de código muerto y creación de la guía de arquitectura.
+
+<details>
+<summary>📦 <b>Registro de cambios — Desarrollo original (TFC, 2025)</b> (pulsa para expandir)</summary>
 
 ## 📜 Registro de Cambios
 
@@ -159,6 +183,9 @@ https://github.com/user-attachments/assets/2b0041ee-7ff2-4bcf-a25b-5fdd719b7e5f
 
 - **Se ha implementado mechanismo de daño con el agua toxica**
 - **Se ha implementado el menu principal** 
+
+</details>
+
 ## ✅ TO-DO LIST  
 
 ### 🔧 Mecánicas del Personaje
@@ -184,14 +211,14 @@ https://github.com/user-attachments/assets/2b0041ee-7ff2-4bcf-a25b-5fdd719b7e5f
 ### 🗡️ Combate
 - [ ] Crear un sistema de AttackComponent más flexible (distancia, tipo, área, cooldown)  
 - [ ] Añadir animaciones cancelables para ataques rápidos  
-- [ ] Implementar enemigos básicos con IA simple (seguimiento, ataque)  
+- [x] Implementar enemigos básicos con IA simple (seguimiento, ataque)  
 - [x] Agregar daño por contacto, hitbox y hurtbox  
 - [ ] Diseñar y animar ataques especiales o combos  
 - [x] Balancear ataques con retroceso (knockback)  
 - [ ] Añadir sistema de mejoras de combate (habilidades o armas)  
 
 ### 🧭 Exploración y Progresión
-- [x] Sistema de checkpoints y viaje rápido con monedas  
+- [ ] Sistema de checkpoints y viaje rápido con monedas  
 - [ ] Implementar puertas bloqueadas por habilidades (para progresión tipo metroidvania)  
 - [ ] Añadir HUD que muestre mapa o mini-mapa  
 - [ ] Guardar progreso del jugador (posición, habilidades, monedas, etc.)  
