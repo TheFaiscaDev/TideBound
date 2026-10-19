@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=3 uid="uid://c6dhjjxjfcuwb"]
 
-[ext_resource type="Script" uid="uid://jwvmkj0m0w4q" path="res://Scripts/Menu/Menu.cs" id="2_t1b1y"]
+[ext_resource type="Script" uid="uid://jwvmkj0m0w4q" path="res://Scripts/UI/Menu.cs" id="2_t1b1y"]
 [ext_resource type="Texture2D" uid="uid://dhu3grcuct21l" path="res://Assets/Fonts/ChatGPT Image 18 may 2025, 23_05_07.png" id="2_uk6bn"]
 [ext_resource type="Texture2D" uid="uid://dap6urbs3hxa0" path="res://Assets/Fonts/ChatGPT Image 18 may 2025, 23_08_41.png" id="3_wuk0b"]
 [ext_resource type="AudioStream" uid="uid://5o1gvmx74j3s" path="res://Assets/Sounds/MenuMusic.mp3" id="5_tjcm1"]
@@ -135,5 +135,5 @@ volume_db = -5.0
 autoplay = true
 bus = &"MenuMusic"
 
-[connection signal="pressed" from="TextureButton" to="." method="_on_start_button_pressed"]
-[connection signal="pressed" from="TextureButton2" to="." method="_on_quit_button_2_pressed"]
+[connection signal="pressed" from="TextureButton" to="." method="OnStartButtonPressed"]
+[connection signal="pressed" from="TextureButton2" to="." method="OnQuitButtonPressed"]

@@ -7,11 +7,11 @@ using Godot;
 /// </summary>
 public partial class UIManager : Node
 {
-    public userInterface UI { get; private set; }
+    public UserInterface UI { get; private set; }
     public TextureProgressBar HealthBar { get; private set; }
     public FadeEffect Fade { get; private set; }
 
-    public void RegisterUI(userInterface ui) => UI = ui;
+    public void RegisterUI(UserInterface ui) => UI = ui;
     public void RegisterHealthBar(TextureProgressBar healthBar) => HealthBar = healthBar;
     public void RegisterFade(FadeEffect fade) => Fade = fade;
 

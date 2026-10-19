@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://chqur6wgv061q" path="res://Assets/Water/Water/Top/2.png" id="5_tdyr2"]
 [ext_resource type="Texture2D" uid="uid://e3mi60ai178i" path="res://Assets/Water/Water/Top/3.png" id="6_unt7e"]
 [ext_resource type="Texture2D" uid="uid://bcwre5xg2ip2u" path="res://Assets/Water/Water/Top/4.png" id="7_ggtaj"]
-[ext_resource type="Script" uid="uid://dk7mvpqo7em8f" path="res://Scripts/Camera/Camera.cs" id="8_0port"]
+[ext_resource type="Script" uid="uid://dk7mvpqo7em8f" path="res://Scripts/World/Camera/Camera.cs" id="8_0port"]
 [ext_resource type="Texture2D" uid="uid://dr0mo15x17jja" path="res://Assets/Water/Water/Bottom/1.png" id="8_y5jbq"]
 [ext_resource type="Texture2D" uid="uid://0j4qg7gb8t73" path="res://Assets/Background/BG Image.png" id="9_me7cu"]
 [ext_resource type="Texture2D" uid="uid://cb2xmco87a36b" path="res://Assets/Background/Water Reflect Big 01.png" id="10_7q6er"]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=47 format=3 uid="uid://c7m1fecdodnd8"]
 
-[ext_resource type="Script" uid="uid://dpochhmyi6wko" path="res://Scripts/BigRed/BigRed.cs" id="1_nsvnc"]
+[ext_resource type="Script" uid="uid://dpochhmyi6wko" path="res://Scripts/Actors/Enemies/BigRed/BigRed.cs" id="1_nsvnc"]
 [ext_resource type="Texture2D" uid="uid://eiaqfynjw3f4" path="res://Assets/Big_Red/Idle_(32 x 32).png" id="2_g2paw"]
 [ext_resource type="Texture2D" uid="uid://thq3y5kwl326" path="res://Assets/Big_Red/Punching_(48 x 32).png" id="2_lujts"]
 [ext_resource type="Texture2D" uid="uid://cd3tofj2kvxsf" path="res://Assets/Big_Red/Running_(32 x 32).png" id="3_ch2sg"]
@@ -8,12 +8,12 @@
 [ext_resource type="Texture2D" uid="uid://b7wjl87c8r8u8" path="res://Assets/Big_Red/Super_Punch_(64 x 32).png" id="3_tr71n"]
 [ext_resource type="Texture2D" uid="uid://cbg03e24x7va1" path="res://Assets/Big_Red/Hurt_(32 x 32).png" id="4_0c6hn"]
 [ext_resource type="PackedScene" uid="uid://c13pwaloe8f57" path="res://Scenes/FSM/fsm.tscn" id="8_n2wvx"]
-[ext_resource type="Script" uid="uid://cxfhkrustoqtf" path="res://Scripts/BigRed/States/Idle_BigRed.cs" id="9_n2wvx"]
-[ext_resource type="Script" uid="uid://cqta2hn3t8kka" path="res://Scripts/BigRed/States/Run_BigRed.cs" id="10_x8t3y"]
-[ext_resource type="Script" uid="uid://dluubnnwy4hj4" path="res://Scripts/BigRed/States/Attack_BigRed.cs" id="12_bf4sq"]
-[ext_resource type="Script" uid="uid://bwy6eusbqu1xq" path="res://Scripts/BigRed/States/Hit_BigRed.cs" id="12_x8t3y"]
+[ext_resource type="Script" uid="uid://cxfhkrustoqtf" path="res://Scripts/Actors/Enemies/BigRed/States/BigRedIdle.cs" id="9_n2wvx"]
+[ext_resource type="Script" uid="uid://cqta2hn3t8kka" path="res://Scripts/Actors/Enemies/BigRed/States/BigRedRun.cs" id="10_x8t3y"]
+[ext_resource type="Script" uid="uid://dluubnnwy4hj4" path="res://Scripts/Actors/Enemies/BigRed/States/BigRedAttack.cs" id="12_bf4sq"]
+[ext_resource type="Script" uid="uid://bwy6eusbqu1xq" path="res://Scripts/Actors/Enemies/BigRed/States/BigRedHit.cs" id="12_x8t3y"]
 [ext_resource type="PackedScene" uid="uid://bbaxyok1ocfum" path="res://Scenes/DamageComponent/damage_component.tscn" id="13_md1id"]
-[ext_resource type="Script" uid="uid://du6lygry8rxjj" path="res://Scenes/HealthComponent/HealthComponent.cs" id="14_x8t3y"]
+[ext_resource type="Script" uid="uid://du6lygry8rxjj" path="res://Scripts/Components/HealthComponent.cs" id="14_x8t3y"]
 [ext_resource type="Script" path="res://Scripts/Components/KnockbackComponent.cs" id="20_kbck"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n6bhy"]
@@ -451,9 +451,9 @@ scale_amount_curve = SubResource("Curve_x54jx")
 color_ramp = SubResource("Gradient_bf4sq")
 hue_variation_max = 0.95
 
-[connection signal="timeout" from="FSM/Idle/Timer" to="FSM/Idle" method="_on_timer_timeout"]
-[connection signal="timeout" from="FSM/Run/Timer" to="FSM/Run" method="_on_timer_timeout"]
-[connection signal="timeout" from="FSM/Attack/Timer" to="FSM/Attack" method="_on_timer_timeout"]
-[connection signal="timeout" from="FSM/Hit/Timer" to="FSM/Hit" method="_on_timer_timeout"]
-[connection signal="body_entered" from="HurtBox" to="HurtBox" method="_on_body_entered"]
-[connection signal="ObjectDestroyed" from="HealthComponent" to="." method="_on_health_component_object_destroyed"]
+[connection signal="timeout" from="FSM/Idle/Timer" to="FSM/Idle" method="OnTimerTimeout"]
+[connection signal="timeout" from="FSM/Run/Timer" to="FSM/Run" method="OnTimerTimeout"]
+[connection signal="timeout" from="FSM/Attack/Timer" to="FSM/Attack" method="OnTimerTimeout"]
+[connection signal="timeout" from="FSM/Hit/Timer" to="FSM/Hit" method="OnTimerTimeout"]
+[connection signal="body_entered" from="HurtBox" to="HurtBox" method="OnBodyEntered"]
+[connection signal="ObjectDestroyed" from="HealthComponent" to="." method="OnHealthComponentObjectDestroyed"]

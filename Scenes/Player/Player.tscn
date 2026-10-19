@@ -1,15 +1,15 @@
 [gd_scene load_steps=54 format=3 uid="uid://c5wxkdm4h2g5p"]
 
-[ext_resource type="Script" uid="uid://c6gf8srd0rbuj" path="res://Scripts/Player/Player.cs" id="1_xogcc"]
+[ext_resource type="Script" uid="uid://c6gf8srd0rbuj" path="res://Scripts/Actors/Player/Player.cs" id="1_xogcc"]
 [ext_resource type="SpriteFrames" uid="uid://cus6qous1vuhg" path="res://Material/Player/PlayerFrames.tres" id="2_5wx5r"]
-[ext_resource type="Script" uid="uid://kwnk4pioyl6o" path="res://Scripts/Player/CompMov_Player.cs" id="2_t26db"]
-[ext_resource type="Script" uid="uid://d3t4u6rgovoo1" path="res://Scripts/Player/HookComponent.cs" id="3_t26db"]
+[ext_resource type="Script" uid="uid://kwnk4pioyl6o" path="res://Scripts/Actors/Player/CompMov_Player.cs" id="2_t26db"]
+[ext_resource type="Script" uid="uid://d3t4u6rgovoo1" path="res://Scripts/Actors/Player/HookComponent.cs" id="3_t26db"]
 [ext_resource type="Texture2D" uid="uid://cl8lueckn0erm" path="res://Assets/Treasure Hunters/Captain Clown Nose/Sprites/Dust Particles/Jump 03.png" id="5_rljeg"]
 [ext_resource type="PackedScene" uid="uid://bbaxyok1ocfum" path="res://Scenes/DamageComponent/damage_component.tscn" id="6_t26db"]
 [ext_resource type="Texture2D" uid="uid://devq86n0at7jj" path="res://Assets/Treasure Hunters/Captain Clown Nose/Sprites/Dust Particles/Jump 05.png" id="7_o1ueq"]
-[ext_resource type="Script" uid="uid://du6lygry8rxjj" path="res://Scenes/HealthComponent/HealthComponent.cs" id="8_fk5o5"]
+[ext_resource type="Script" uid="uid://du6lygry8rxjj" path="res://Scripts/Components/HealthComponent.cs" id="8_fk5o5"]
 [ext_resource type="Script" path="res://Scripts/Components/KnockbackComponent.cs" id="10_kbck"]
-[ext_resource type="Script" uid="uid://5bgodqicjawc" path="res://Scripts/ItemCollector/ItemCollector.cs" id="9_825xp"]
+[ext_resource type="Script" uid="uid://5bgodqicjawc" path="res://Scripts/Components/ItemCollector.cs" id="9_825xp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fk5o5"]
 size = Vector2(20, 27)
@@ -601,12 +601,12 @@ script = ExtResource("9_825xp")
 position = Vector2(1, -2.5)
 shape = SubResource("RectangleShape2D_ji083")
 
-[connection signal="area_entered" from="HurtBox" to="HurtBox" method="_on_area_entered"]
-[connection signal="area_exited" from="HurtBox" to="HurtBox" method="_on_area_exited"]
-[connection signal="body_entered" from="HurtBox" to="HurtBox" method="_on_body_entered"]
-[connection signal="area_entered" from="AnimatedSprite2D/swordHit" to="." method="_on_sword_hit_area_entered"]
-[connection signal="body_entered" from="AnimatedSprite2D/swordHit" to="." method="_on_sword_hit_body_entered"]
-[connection signal="HealthChanged" from="HealthComponent" to="." method="_on_health_component_health_changed"]
-[connection signal="ObjectDestroyed" from="HealthComponent" to="." method="_on_health_component_object_destroyed"]
-[connection signal="timeout" from="WaterCooldown" to="." method="_on_water_cooldown_timeout"]
-[connection signal="body_entered" from="ItemCollector" to="ItemCollector" method="_on_body_entered"]
+[connection signal="area_entered" from="HurtBox" to="HurtBox" method="OnAreaEntered"]
+[connection signal="area_exited" from="HurtBox" to="HurtBox" method="OnAreaExited"]
+[connection signal="body_entered" from="HurtBox" to="HurtBox" method="OnBodyEntered"]
+[connection signal="area_entered" from="AnimatedSprite2D/swordHit" to="." method="OnSwordHitAreaEntered"]
+[connection signal="body_entered" from="AnimatedSprite2D/swordHit" to="." method="OnSwordHitBodyEntered"]
+[connection signal="HealthChanged" from="HealthComponent" to="." method="OnHealthComponentHealthChanged"]
+[connection signal="ObjectDestroyed" from="HealthComponent" to="." method="OnHealthComponentObjectDestroyed"]
+[connection signal="timeout" from="WaterCooldown" to="." method="OnWaterCooldownTimeout"]
+[connection signal="body_entered" from="ItemCollector" to="ItemCollector" method="OnBodyEntered"]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bbaxyok1ocfum"]
 
-[ext_resource type="Script" uid="uid://c7ptq5glnsv4v" path="res://Scripts/DamageComponent/DamageComponent.cs" id="1_gv1t8"]
+[ext_resource type="Script" uid="uid://c7ptq5glnsv4v" path="res://Scripts/Components/DamageComponent.cs" id="1_gv1t8"]
 
 [node name="DamageComponent" type="Area2D" node_paths=PackedStringArray("AnimationPlayer")]
 script = ExtResource("1_gv1t8")

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://e3dekuxm6d55"]
 
-[ext_resource type="Script" uid="uid://nfeimu8jqxnm" path="res://Scripts/FadeArea/FadeArea.cs" id="1_6072c"]
+[ext_resource type="Script" uid="uid://nfeimu8jqxnm" path="res://Scripts/World/FadeArea/FadeArea.cs" id="1_6072c"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_av4q1"]
 
@@ -11,5 +11,5 @@ script = ExtResource("1_6072c")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_av4q1")
 
-[connection signal="body_entered" from="." to="." method="_on_body_entered"]
-[connection signal="body_exited" from="." to="." method="_on_body_exited"]
+[connection signal="body_entered" from="." to="." method="OnBodyEntered"]
+[connection signal="body_exited" from="." to="." method="OnBodyExited"]
