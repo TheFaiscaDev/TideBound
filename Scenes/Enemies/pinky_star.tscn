@@ -1,6 +1,6 @@
 [gd_scene load_steps=79 format=3 uid="uid://bxum51jo6eeh0"]
 
-[ext_resource type="Script" uid="uid://cfmqt8le7ge2u" path="res://Scripts/PikyStar/PinkyStar.cs" id="1_1q61n"]
+[ext_resource type="Script" uid="uid://cfmqt8le7ge2u" path="res://Scripts/Actors/Enemies/PinkyStar/PinkyStar.cs" id="1_1q61n"]
 [ext_resource type="Texture2D" uid="uid://dh6gnm5ng7sfy" path="res://Assets/Pink Star/07-Attack/Attack 01.png" id="1_3xe0p"]
 [ext_resource type="Texture2D" uid="uid://cpxjavannoh6v" path="res://Assets/Pink Star/06-Anticipation/Anticipation 01.png" id="1_pabjy"]
 [ext_resource type="Texture2D" uid="uid://d1xucqme4hrev" path="res://Assets/Pink Star/06-Anticipation/Anticipation 02.png" id="2_1yfyv"]
@@ -45,11 +45,11 @@
 [ext_resource type="Texture2D" uid="uid://bhb63avpee5ih" path="res://Assets/Pink Star/11-Attack Effect/Attack Effect 02.png" id="41_7phwe"]
 [ext_resource type="Texture2D" uid="uid://dhcgplv0ugahg" path="res://Assets/Pink Star/11-Attack Effect/Attack Effect 03.png" id="42_rcbb8"]
 [ext_resource type="Texture2D" uid="uid://b8brnt0p807e2" path="res://Assets/Pink Star/11-Attack Effect/Attack Effect 04.png" id="43_sfvrx"]
-[ext_resource type="Script" uid="uid://dsgip3so6dlsj" path="res://Scripts/PikyStar/States/PinkyStar_Idle.cs" id="45_t00hb"]
-[ext_resource type="Script" uid="uid://p1bxco5sypon" path="res://Scripts/PikyStar/States/PinkyStar_Run.cs" id="46_tyhte"]
-[ext_resource type="Script" uid="uid://ckp33hw6mhjw5" path="res://Scripts/PikyStar/States/PikyStar_Hit.cs" id="47_1q61n"]
-[ext_resource type="Script" uid="uid://5d6rp3xdo6r6" path="res://Scripts/PikyStar/States/PikyStar_Attack.cs" id="47_tyhte"]
-[ext_resource type="Script" uid="uid://du6lygry8rxjj" path="res://Scenes/HealthComponent/HealthComponent.cs" id="50_5giau"]
+[ext_resource type="Script" uid="uid://dsgip3so6dlsj" path="res://Scripts/Actors/Enemies/PinkyStar/States/PinkyStarIdle.cs" id="45_t00hb"]
+[ext_resource type="Script" uid="uid://p1bxco5sypon" path="res://Scripts/Actors/Enemies/PinkyStar/States/PinkyStarRun.cs" id="46_tyhte"]
+[ext_resource type="Script" uid="uid://ckp33hw6mhjw5" path="res://Scripts/Actors/Enemies/PinkyStar/States/PinkyStarHit.cs" id="47_1q61n"]
+[ext_resource type="Script" uid="uid://5d6rp3xdo6r6" path="res://Scripts/Actors/Enemies/PinkyStar/States/PinkyStarAttack.cs" id="47_tyhte"]
+[ext_resource type="Script" uid="uid://du6lygry8rxjj" path="res://Scripts/Components/HealthComponent.cs" id="50_5giau"]
 [ext_resource type="PackedScene" uid="uid://bbaxyok1ocfum" path="res://Scenes/DamageComponent/damage_component.tscn" id="51_7tt8x"]
 [ext_resource type="Script" path="res://Scripts/Components/KnockbackComponent.cs" id="60_kbck"]
 
@@ -648,8 +648,8 @@ script = ExtResource("60_kbck")
 position = Vector2(-1, 1)
 shape = SubResource("RectangleShape2D_bki1a")
 
-[connection signal="timeout" from="FSM/Idle/Timer" to="FSM/Idle" method="_on_timer_timeout"]
-[connection signal="timeout" from="FSM/Run/Timer" to="FSM/Run" method="_on_timer_timeout"]
-[connection signal="timeout" from="FSM/Attack/Timer" to="FSM/Attack" method="_on_timer_timeout"]
-[connection signal="ObjectDestroyed" from="HealthComponent" to="." method="_on_health_component_object_destroyed"]
-[connection signal="body_entered" from="hurtBox" to="hurtBox" method="_on_body_entered"]
+[connection signal="timeout" from="FSM/Idle/Timer" to="FSM/Idle" method="OnTimerTimeout"]
+[connection signal="timeout" from="FSM/Run/Timer" to="FSM/Run" method="OnTimerTimeout"]
+[connection signal="timeout" from="FSM/Attack/Timer" to="FSM/Attack" method="OnTimerTimeout"]
+[connection signal="ObjectDestroyed" from="HealthComponent" to="." method="OnHealthComponentObjectDestroyed"]
+[connection signal="body_entered" from="hurtBox" to="hurtBox" method="OnBodyEntered"]

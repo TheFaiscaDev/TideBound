@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://dd7gkkdyy3b36"]
 
 [ext_resource type="Texture2D" uid="uid://7hjqrk43scgn" path="res://Assets/Treasure Hunters/Spikes/Spikes.png" id="1_13xbf"]
-[ext_resource type="Script" uid="uid://3x1iw2unthpb" path="res://Scripts/Spikes/Spikes.cs" id="2_4rqb0"]
+[ext_resource type="Script" uid="uid://3x1iw2unthpb" path="res://Scripts/World/Spikes/Spikes.cs" id="2_4rqb0"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4rqb0"]
 size = Vector2(32, 5.33333)

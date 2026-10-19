@@ -3,13 +3,12 @@
 [ext_resource type="TileSet" uid="uid://8j210w2qgbcc" path="res://Material/TileSet/TileSet.tres" id="1_06b82"]
 [ext_resource type="Script" uid="uid://buobib4x4ch7w" path="res://Scripts/Levels/Level1/Level1.cs" id="1_snvte"]
 [ext_resource type="Texture2D" uid="uid://dthy2wer334g6" path="res://Assets/back/Sprite-0002.png" id="1_uqlrs"]
-[ext_resource type="Script" uid="uid://cvp3xtucqo8mh" path="res://Scripts/UI/UI.cs" id="1_w3ot6"]
 [ext_resource type="Texture2D" uid="uid://b0hnke4llnicy" path="res://Assets/Jungle Asset Pack/parallax background/plx-1.png" id="3_lul2f"]
 [ext_resource type="Texture2D" uid="uid://dqnp4tycluvdr" path="res://Assets/Jungle Asset Pack/parallax background/plx-2.png" id="4_crq7o"]
 [ext_resource type="Texture2D" uid="uid://d0wo4riviievg" path="res://Assets/Jungle Asset Pack/parallax background/plx-3.png" id="5_3d6kg"]
 [ext_resource type="Texture2D" uid="uid://b6xt7xcm4epsv" path="res://Assets/Jungle Asset Pack/parallax background/plx-4.png" id="6_7metg"]
 [ext_resource type="Texture2D" uid="uid://bonwgi7an2lmq" path="res://Assets/Chain/cade.png" id="6_spq4p"]
-[ext_resource type="Script" uid="uid://dk7mvpqo7em8f" path="res://Scripts/Camera/Camera.cs" id="7_418l3"]
+[ext_resource type="Script" uid="uid://dk7mvpqo7em8f" path="res://Scripts/World/Camera/Camera.cs" id="7_418l3"]
 [ext_resource type="Texture2D" uid="uid://dr8daoousp2ud" path="res://Assets/Jungle Asset Pack/parallax background/plx-5.png" id="7_t18yi"]
 [ext_resource type="PackedScene" uid="uid://c5wxkdm4h2g5p" path="res://Scenes/Player/Player.tscn" id="8_h7mdq"]
 [ext_resource type="Texture2D" uid="uid://conb66orbjb7k" path="res://Assets/Pixel Art Platformer - Village Props v2.3.0/Texture/TX Village Props.png" id="8_htexa"]
@@ -20,17 +19,18 @@
 [ext_resource type="PackedScene" uid="uid://bxum51jo6eeh0" path="res://Scenes/Enemies/pinky_star.tscn" id="14_et44u"]
 [ext_resource type="Texture2D" uid="uid://djuvidb5amkv8" path="res://Assets/Particles/particles.png" id="15_hk4vc"]
 [ext_resource type="Material" uid="uid://1u68b05i1lkx" path="res://Assets/addons/water2d/water2D_material.tres" id="16_spq4p"]
-[ext_resource type="Script" uid="uid://7kwsqnvm4qmo" path="res://Scripts/LineRope/Rope.cs" id="17_3hula"]
+[ext_resource type="Script" uid="uid://7kwsqnvm4qmo" path="res://Scripts/Actors/Player/LineRope/Rope.cs" id="17_3hula"]
 [ext_resource type="Texture2D" uid="uid://bb667vcap6oer" path="res://Assets/addons/water2d/icon.png" id="17_8fhce"]
 [ext_resource type="Script" uid="uid://b5a7drn2phtrp" path="res://Assets/addons/water2d/Water2D.gd" id="18_uqlrs"]
 [ext_resource type="PackedScene" uid="uid://b1t0mk60ypsn6" path="res://Scenes/Chest/chest.tscn" id="19_8fhce"]
 [ext_resource type="Texture2D" uid="uid://16ws7ciriwmh" path="res://Assets/ELR-WindyLeafs/ELR_SpringlLeaf.png" id="22_2oprd"]
 [ext_resource type="PackedScene" uid="uid://bbogme8t44hul" path="res://Scenes/Key/key.tscn" id="22_p6c81"]
-[ext_resource type="Script" uid="uid://cyohp3jflc2cv" path="res://Scripts/Water/ToxicWater.cs" id="23_rd2vd"]
-[ext_resource type="Script" uid="uid://cf1qtjwgpgwk4" path="res://Scripts/ZoomTrigger/ZoomTrigger.cs" id="24_xawdx"]
-[ext_resource type="Script" uid="uid://b27xl04y7k1as" path="res://Scripts/FadeEffect/FadeEffect.cs" id="26_efsfe"]
+[ext_resource type="Script" uid="uid://cyohp3jflc2cv" path="res://Scripts/World/Water/ToxicWater.cs" id="23_rd2vd"]
+[ext_resource type="Script" uid="uid://cf1qtjwgpgwk4" path="res://Scripts/World/ZoomTrigger/ZoomTrigger.cs" id="24_xawdx"]
+[ext_resource type="Script" uid="uid://b27xl04y7k1as" path="res://Scripts/World/FadeEffect/FadeEffect.cs" id="26_efsfe"]
 [ext_resource type="AudioStream" uid="uid://b13n7eek2ofcs" path="res://Assets/Sounds/AmbientSound.wav" id="30_wspup"]
 [ext_resource type="PackedScene" uid="uid://h06f7vm2p0bl" path="res://Scenes/Coin/coin.tscn" id="31_0a0w2"]
+[ext_resource type="PackedScene" uid="uid://btb2jep44xrfs" path="res://Scenes/UI/ui.tscn" id="35_uiui"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_uqlrs"]
 
@@ -448,7 +448,6 @@ navigation_visibility_mode = 1
 
 [node name="Menu" type="CanvasLayer" parent="."]
 follow_viewport_scale = 0.802
-script = ExtResource("1_w3ot6")
 
 [node name="Barrels" type="Node2D" parent="."]
 position = Vector2(323, 221)
@@ -1035,3 +1034,4 @@ position = Vector2(2159, 949)
 [connection signal="body_exited" from="CameraTriggers/Area2D2" to="CameraTriggers/Area2D2" method="OnBodyExited"]
 [connection signal="body_entered" from="CameraTriggers/Area2D3" to="CameraTriggers/Area2D3" method="OnBodyEntered"]
 [connection signal="body_exited" from="CameraTriggers/Area2D3" to="CameraTriggers/Area2D3" method="OnBodyExited"]
+[node name="UI" parent="Menu" instance=ExtResource("35_uiui")]

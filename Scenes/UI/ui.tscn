@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=3 uid="uid://btb2jep44xrfs"]
 
-[ext_resource type="Script" uid="uid://xawieuw0scws" path="res://Scripts/UI/userInterface.cs" id="1_duuxe"]
+[ext_resource type="Script" uid="uid://xawieuw0scws" path="res://Scripts/UI/UserInterface.cs" id="1_duuxe"]
 [ext_resource type="Texture2D" uid="uid://cey5e0fn5a7d1" path="res://Assets/Treasure Hunters/Life Bars/Big Bars/1.png" id="1_fo61o"]
 [ext_resource type="Texture2D" uid="uid://cvhcs71as0rro" path="res://Assets/Treasure Hunters/Life Bars/Big Bars/3.png" id="2_alcrr"]
 [ext_resource type="Texture2D" uid="uid://cffg0ms4q31e1" path="res://Assets/Treasure Hunters/Life Bars/Big Bars/4.png" id="3_1c2ca"]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=15 format=3 uid="uid://c5vj5ew83tb5m"]
 
-[ext_resource type="Script" uid="uid://d1j7a5w77w35a" path="res://Scripts/Box/Box.cs" id="1_les6k"]
+[ext_resource type="Script" uid="uid://d1j7a5w77w35a" path="res://Scripts/Items/Box/Box.cs" id="1_les6k"]
 [ext_resource type="Texture2D" uid="uid://cewycdnsfi0lh" path="res://Assets/Box/Idle/1.png" id="2_6sdk4"]
 [ext_resource type="Texture2D" uid="uid://bxoj71mh8nyx3" path="res://Assets/Box/Hit/1.png" id="3_ut4c3"]
 [ext_resource type="Texture2D" uid="uid://bl8ur6gap3jxl" path="res://Assets/Box/Hit/2.png" id="4_psufl"]
@@ -369,4 +369,4 @@ position = Vector2(0.477606, 0.00983429)
 scale = Vector2(1.35558, 0.876614)
 shape = SubResource("RectangleShape2D_hh6j8")
 
-[connection signal="animation_finished" from="AnimatedSprite2D/AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
+[connection signal="animation_finished" from="AnimatedSprite2D/AnimationPlayer" to="." method="OnAnimationPlayerAnimationFinished"]
