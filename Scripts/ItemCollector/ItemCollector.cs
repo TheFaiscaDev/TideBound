@@ -3,13 +3,13 @@ using System;
 
 public partial class ItemCollector : Area2D
 {
-    private userInterface ui;
-    public override void _Ready()
-    {
-        ui = GetTree().Root.GetNode("Level1/Menu/UI") as userInterface;
-    }
+    // La UI se obtiene del UIManager (autoload), sin rutas absolutas
+    private userInterface GetUI() => GetNodeOrNull<UIManager>("/root/UIManager")?.UI;
+
     public void _on_body_entered(Node2D body)
     {
+        userInterface ui = GetUI();
+        if (ui == null) return;
         if (body.IsInGroup("Key"))
         {
             if (!ui.getKey())

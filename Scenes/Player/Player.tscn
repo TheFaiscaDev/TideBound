@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://bbaxyok1ocfum" path="res://Scenes/DamageComponent/damage_component.tscn" id="6_t26db"]
 [ext_resource type="Texture2D" uid="uid://devq86n0at7jj" path="res://Assets/Treasure Hunters/Captain Clown Nose/Sprites/Dust Particles/Jump 05.png" id="7_o1ueq"]
 [ext_resource type="Script" uid="uid://du6lygry8rxjj" path="res://Scenes/HealthComponent/HealthComponent.cs" id="8_fk5o5"]
+[ext_resource type="Script" path="res://Scripts/Components/KnockbackComponent.cs" id="10_kbck"]
 [ext_resource type="Script" uid="uid://5bgodqicjawc" path="res://Scripts/ItemCollector/ItemCollector.cs" id="9_825xp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fk5o5"]
@@ -585,6 +586,9 @@ target_position = Vector2(0.100021, 244)
 script = ExtResource("8_fk5o5")
 Health = 20
 metadata/_custom_type_script = "uid://du6lygry8rxjj"
+
+[node name="KnockbackComponent" type="Node" parent="."]
+script = ExtResource("10_kbck")
 
 [node name="WaterCooldown" type="Timer" parent="."]
 

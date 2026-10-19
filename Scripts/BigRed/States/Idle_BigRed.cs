@@ -4,7 +4,8 @@ using System;
 public partial class Idle_BigRed : State
 {
     [Export] RayCast2D raycast;
-    [Export] Enemy enemy;
+    // El enemigo se obtiene del ControlledNode de la FSM (sin asignar en el inspector)
+    private Enemy enemy => GetControlledNode<Enemy>();
 
     public override void Enter() {
         raycast.Enabled = true;
@@ -22,6 +23,8 @@ public partial class Idle_BigRed : State
 
     }
     public override void Exit() {
+        // Paramos el timer para que no dispare transiciones fuera del estado
+        GetNodeOrNull<Timer>("Timer")?.Stop();
     }
 
     public override void Update(float delta) {

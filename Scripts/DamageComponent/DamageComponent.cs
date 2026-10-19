@@ -9,27 +9,19 @@ public partial class DamageComponent : Area2D
 	[Export] public float PushForce = 100.0f;
 	[Export] public float PushDuration = 0.2f;
 	[Signal] public delegate void TakeDamageEventHandler(float DamageAmount);
-	private FadeEffect _fadeEffect;
 	private Marker2D _respawnMarker;
 
-
-	public override void _Ready()
-	{
-		_fadeEffect = GetNode<FadeEffect>("/root/Level1/CanvasLayer/ColorRect");
-		if (_fadeEffect == null)
-		{
-			GD.PushError("FadeEffect not found in DamageComponent node.");
-		}
-	}
+	// FadeEffect se obtiene del UIManager (autoload), sin rutas absolutas
+	private FadeEffect Fade => GetNodeOrNull<UIManager>("/root/UIManager")?.Fade;
 
 	private void _on_body_entered(Node2D body)
 	{
 		if(body.IsInGroup("Spikes")){
-			_respawnMarker =body.GetParent().GetNode<Marker2D>("Marker2D");
-			if (_fadeEffect != null)
+			_respawnMarker = body.GetParent().GetNodeOrNull<Marker2D>("Marker2D");
+			if (Fade != null && _respawnMarker != null)
 			{
-				_fadeEffect.FadedToBlack += OnFadedToBlack;
-				_fadeEffect.FadeToBlack(); // Iniciar fundido
+				Fade.FadedToBlack += OnFadedToBlack;
+				Fade.FadeToBlack(); // Iniciar fundido
 			}
 			return;
 		}
@@ -39,20 +31,16 @@ public partial class DamageComponent : Area2D
 			{
 				DamageAmount = enemy.damage;
 			}
-			// Verificar si el cuerpo tiene un HealthComponent
-			if (GetParent().HasNode("HealthComponent") && GetParent().GetNode("HealthComponent") is HealthComponent targetHealth)
+			// El padre de esta hurtbox es quien recibe el daño (type-safe)
+			if (GetParent() is IDamageable target)
 			{
-				targetHealth.TakeDamage(int.Parse(DamageAmount.ToString()));
+				target.TakeDamage((int)DamageAmount);
 				EmitSignal(SignalName.TakeDamage, DamageAmount);
-				
-				if(GetParent().HasMethod("ApplyPushback"))
-				{
-					GetParent().CallDeferred("ApplyPushback", body.GlobalPosition, PushForce, PushDuration);
-				}
+				target.ApplyKnockback(body.GlobalPosition, PushForce, PushDuration);
 			}
 		}
-		
-		
+
+
 	}
 
 	public void _on_area_exited(Area2D area)
@@ -62,7 +50,11 @@ public partial class DamageComponent : Area2D
 			if (GetParent().HasMethod("switchToWater"))
 			{
 				GetParent<Node2D>().CallDeferred("switchToWater");
-				GetParent<Player>()._waterCooldown.Stop();
+				// El cooldown de agua solo existe en el jugador
+				if (GetParent() is Player player && player._waterCooldown != null)
+				{
+					player._waterCooldown.Stop();
+				}
 			}
 			else
 			{
@@ -90,11 +82,13 @@ public partial class DamageComponent : Area2D
 		if (_respawnMarker != null)
 		{
 			GetParent<Node2D>().GlobalPosition = _respawnMarker.GlobalPosition;
-			GD.Print("DamageComponent: Player repositioned after fade");
 		}
 
 		// Desconectar señal y hacer fundido de regreso
-		_fadeEffect.FadedToBlack -= OnFadedToBlack;
-		_fadeEffect.FadeFromBlack();
+		if (Fade != null)
+		{
+			Fade.FadedToBlack -= OnFadedToBlack;
+			Fade.FadeFromBlack();
+		}
 	}
 }

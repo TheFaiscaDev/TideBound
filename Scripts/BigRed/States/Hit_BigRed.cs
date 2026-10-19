@@ -3,7 +3,8 @@ using System;
 
 public partial class Hit_BigRed : State
 {
-    [Export] Enemy enemy;
+    // El enemigo se obtiene del ControlledNode de la FSM (sin asignar en el inspector)
+    private Enemy enemy => GetControlledNode<Enemy>();
 
     public override void Enter() {
         enemy.animatedSprite.Play("hit");
@@ -14,6 +15,8 @@ public partial class Hit_BigRed : State
         }
     }
     public override void Exit() {
+        // Paramos el timer para que no dispare transiciones fuera del estado
+        GetNodeOrNull<Timer>("Timer")?.Stop();
     }
 
     public override void Update(float delta) {
@@ -26,6 +29,9 @@ public partial class Hit_BigRed : State
     public override void HandleInput(InputEvent @event) { }
 
     public void _on_timer_timeout(){
-        fsm.TransitionTo("Run");
+        if(fsm.currentState == this)
+        {
+            fsm.TransitionTo("Run");
+        }
     }
 }

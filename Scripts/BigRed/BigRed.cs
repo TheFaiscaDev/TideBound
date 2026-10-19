@@ -3,55 +3,27 @@ using System;
 
 public partial class BigRed : Enemy
 {
-    public Vector2 velocity;
-    private HealthComponent _healthComponent;
-
-    private Enemy _enemy;
-
-    private bool died = false;
-
-    public BigRed() : base()
-    {
-    }
-
-    public override void ApplyPushback(Vector2 sourcePosition, float force, float duration)
-    {
-        base.ApplyPushback(sourcePosition, force, duration);
-        GetNode<StateMachine>("FSM").TransitionTo("Hit");
-    }
-
-    // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        base._Ready();
         AddToGroup("Enemy");
-        _healthComponent = GetNodeOrNull<HealthComponent>("HealthComponent");
-        if (_healthComponent == null)
+        if (GetNodeOrNull<HealthComponent>("HealthComponent") == null)
         {
             GD.PushError("HealthComponent not found in BigRed node.");
         }
     }
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _PhysicsProcess(double delta)
+    protected override void OnKnockback()
     {
-        if (died)
+        GetNode<StateMachine>("FSM").TransitionTo("Hit");
+    }
+
+    protected override void OnDeathAnimation()
+    {
+        if (animatedSprite != null && animatedSprite.GetNodeOrNull<AnimationPlayer>("AnimationPlayer") is AnimationPlayer animPlayer)
         {
-            animatedSprite.GetNode<AnimationPlayer>("AnimationPlayer").Play("dead");
-            return;
+            animPlayer.Play("dead");
         }
-        base._PhysicsProcess(delta);
     }
-
-
-    public void _on_health_component_object_destroyed()
-    {
-        // GetNode("FSM").QueueFree();
-        // GetNode("HurtBox").QueueFree();
-        died = true;
-    }
-
-
-
-
 }
 

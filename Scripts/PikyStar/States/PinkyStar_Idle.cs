@@ -4,7 +4,8 @@ using System;
 public partial class PinkyStar_Idle : State
 {
     [Export] RayCast2D raycast;
-    [Export] Enemy enemy;
+    // El enemigo se obtiene del ControlledNode de la FSM (sin asignar en el inspector)
+    private Enemy enemy => GetControlledNode<Enemy>();
     public AnimationNodeStateMachinePlayback animationMachine;
 
 
@@ -28,6 +29,8 @@ public partial class PinkyStar_Idle : State
     }
     public override void Exit()
     {
+        // Paramos el timer para que no dispare transiciones fuera del estado
+        GetNodeOrNull<Timer>("Timer")?.Stop();
     }
 
     public override void Update(float delta)

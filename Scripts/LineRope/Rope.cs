@@ -9,14 +9,25 @@ public partial class Rope : Line2D
 	public override void _Process(double delta)
 	{
 		base._Process(delta);
-		if(this.Visible){
-			AddPoint(start);
-			AddPoint(end,1);
-			RemovePoint(0);
-		}else{
+		if (this.Visible)
+		{
+			// Actualizamos los puntos en vez de crearlos y borrarlos cada frame
+			if (GetPointCount() != 2)
+			{
+				ClearPoints();
+				AddPoint(start);
+				AddPoint(end);
+			}
+			else
+			{
+				SetPointPosition(0, start);
+				SetPointPosition(1, end);
+			}
+		}
+		else if (GetPointCount() > 0)
+		{
 			ClearPoints();
 		}
-
 	}
 
 }

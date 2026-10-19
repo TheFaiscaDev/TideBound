@@ -39,6 +39,13 @@ public partial class userInterface : Control
         key = GetNode<TextureRect>("Key");
         coinsLabel = GetNode<Label>("CoinsLabel");
         setKey(false);
+
+        // Registro en el UIManager (autoload) para que otros nodos no usen rutas absolutas
+        if (GetNodeOrNull<UIManager>("/root/UIManager") is UIManager uiManager)
+        {
+            uiManager.RegisterUI(this);
+            uiManager.RegisterHealthBar(GetNode<TextureProgressBar>("TextureProgressBar"));
+        }
     }
 
 

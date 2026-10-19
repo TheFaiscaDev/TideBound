@@ -5,42 +5,26 @@ using System.Collections.Generic;
 public partial class StateMachine : Node
 {
 
-	private NodePath initialState;
-	[Export] public NodePath InitialState{
-		get{
-			return initialState;
-		}
-		set{
-			initialState = value;
-		}
-	}
+	[Export] public NodePath InitialState { get; set; }
 
-	private Node controlledNode;
-	[Export] public Node ControlledNode{
-		get{
-			return controlledNode;
-		}
-		set{
-			controlledNode = value;
-		}
-	}
+	[Export] public Node ControlledNode { get; set; }
+
 	private Dictionary<string, State> states;
-	public State currentState {get; set; }
+	public State currentState { get; set; }
+
 	public override void _Ready()
 	{
 		states = new Dictionary<string, State>();
 		foreach (Node node in this.GetChildren())
 		{
-			if(node is State s)
+			if (node is State s)
 			{
 				states.Add(node.Name, s);
 				s.fsm = this;
-				s.Enter();
-				s.Exit(); //reset
 			}
 		}
 
-		currentState = GetNode<State>(initialState);
+		currentState = GetNode<State>(InitialState);
 		currentState.Enter();
 	}
 
@@ -61,7 +45,7 @@ public partial class StateMachine : Node
 	
 	public void TransitionTo(string key)
 	{
-		if(!states.ContainsKey(key) || currentState == states[key])
+		if (!states.ContainsKey(key) || currentState == states[key])
 		{
 			return;
 		}
@@ -69,5 +53,15 @@ public partial class StateMachine : Node
 		currentState = states[key];
 		currentState.Enter();
 	}
-	
+
+	/// Vuelve al estado inicial (usado al respawnear al enemigo).
+	public void ResetStateMachine()
+	{
+		if (currentState != null)
+		{
+			currentState.Exit();
+		}
+		currentState = GetNode<State>(InitialState);
+		currentState.Enter();
+	}
 }

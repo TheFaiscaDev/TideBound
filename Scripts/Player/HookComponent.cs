@@ -57,7 +57,9 @@ public partial class HookComponent : Node2D
 	public void HandleHook(float delta)
 	{
 		raycast.LookAt(mouse.VirtualCursorPosition);
-		raycast.Rotation += 80; // Suma de rotación si es necesaria para el sprite
+		// Tras LookAt el eje +X apunta al cursor; el rayo usa +Y local
+		// (target_position = (0, 244)), así que giramos 90° para alinearlo.
+		raycast.Rotation += Mathf.Pi / 2f;
 		if (!parentHook.IsHooked || !Input.IsActionPressed("hook"))
 		{
 			line.Visible = false;
@@ -77,7 +79,6 @@ public partial class HookComponent : Node2D
 
 		velocity = velocity.LimitLength(300f);
 
-		System.Console.WriteLine($"Hook Velocity: {velocity}");
 		parent.Velocity = velocity;
 		if (velocity.Normalized().X != 0)
 			animatedSprite.Scale = new Vector2(Mathf.Sign(velocity.Normalized().X), 1);

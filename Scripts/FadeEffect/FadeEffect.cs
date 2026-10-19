@@ -17,6 +17,9 @@ public partial class FadeEffect : ColorRect
         MouseFilter = MouseFilterEnum.Ignore;
         Color = new Color(Color.R, Color.G, Color.B, 0);
         this.Visible = true;
+
+        // Registro en el UIManager (autoload) para que otros nodos no usen rutas absolutas
+        GetNodeOrNull<UIManager>("/root/UIManager")?.RegisterFade(this);
     }
 
     public void FadeToBlack(float duration = -1)

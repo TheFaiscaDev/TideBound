@@ -1,86 +1,172 @@
 using Godot;
 using System;
 
-public partial class Enemy : CharacterBody2D,DamageableObject
+public partial class Enemy : CharacterBody2D, IDamageable
 {
-	[Export] public float PushForce = 100.0f; // Fuerza base de retroceso
-	[Export] public float PushDuration = 0.1f; // Duración base del retroceso
+	[Export] public float PushForce = 100.0f; // Fuerza base del retroceso que este enemigo aplica al jugador
+	[Export] public float PushDuration = 0.1f; // Duración base del retroceso que aplica al jugador
+	[Export] public double damage;
+	[Export] public CollisionShape2D collisionShape;
+	[Export] public AnimatedSprite2D animatedSprite;
+	[Export] public AnimationTree animationTree;
+	[Export] public float CorpseDuration = 2.0f; // Tiempo que el cadáver permanece visible antes del despawn
 
-	private bool _isBeingPushed = false;
-	private Vector2 _pushDirection = Vector2.Zero;
-	private float _pushTimer = 0.0f;
-	private Vector2 _velocity = Vector2.Zero;
-	private int health;
+	// Referencia al jugador, resuelta automáticamente por grupo (sin asignar en el inspector)
+	public Player player { get; private set; }
 
-	[Export]
-	public int Health
+	private KnockbackComponent _knockback;
+	private HealthComponent _healthComponent;
+
+	// --- Estado de muerte / spawn / respawn ---
+	protected bool _isDead = false;
+	public bool IsDead => _isDead;
+
+	private Vector2 _initialPosition;
+	private float _initialProgressRatio;
+	private Timer _corpseTimer;
+
+	public override void _Ready()
 	{
-		get
+		player = GetTree().GetFirstNodeInGroup("Player") as Player;
+		_knockback = GetNodeOrNull<KnockbackComponent>("KnockbackComponent");
+		_healthComponent = GetNodeOrNull<HealthComponent>("HealthComponent");
+
+		// Guardamos el estado inicial para poder respawnear al enemigo
+		_initialPosition = Position;
+		if (GetParent() is PathFollow2D pathFollow)
 		{
-			return health;
+			_initialProgressRatio = pathFollow.ProgressRatio;
 		}
-		set
-		{
-			health = value;
-		}
+
+		_corpseTimer = new Timer { OneShot = true, WaitTime = CorpseDuration };
+		AddChild(_corpseTimer);
+		_corpseTimer.Timeout += OnCorpseExpired;
 	}
 
-	[Export]
-	public double damage;
+	// --- IDamageable ---
 
-	[Export] public Player player;
-
-	[Export]
-	CollisionShape2D collisionShape;
-
-	[Export]
-	public AnimatedSprite2D animatedSprite;
-
-	[Export]
-	public AnimationTree animationTree;
-
-
-
-	public Enemy()
+	public void TakeDamage(int amount)
 	{
-		health = health != 0 ? health : 5;
+		_healthComponent?.TakeDamage(amount);
 	}
 
-	public virtual void ApplyPushback(Vector2 sourcePosition, float force, float duration)
+	public void ApplyKnockback(Vector2 sourcePosition, float force, float duration)
 	{
-		_pushDirection = (GlobalPosition - sourcePosition).Normalized();
-		PushForce = force; // Sobreescribe la fuerza base con la del impacto
-		PushDuration = duration; // Sobreescribe la duración base con la del impacto
-		_isBeingPushed = true;
-		_pushTimer = 0.0f;
+		if (_isDead) return;
+		_knockback?.Apply(sourcePosition, force, duration);
+		OnKnockback();
 	}
+
+	/// Hook para que cada enemigo reaccione al retroceso (p. ej. cambiar al estado Hit).
+	protected virtual void OnKnockback() { }
+
 	public override void _PhysicsProcess(double delta)
 	{
-		if (_isBeingPushed)
+		if (_isDead) return;
+
+		if (_knockback != null && _knockback.TryComputeVelocity(delta, Velocity.Y, out Vector2 knockbackVelocity))
 		{
-			_velocity = new Vector2(_pushDirection.X * PushForce * 3, Mathf.Lerp(Velocity.Y, _pushDirection.Y * PushForce, 90f * (float)delta));
-
-			_pushTimer += (float)delta;
-			if (_pushTimer >= PushDuration) // Usa la duración base del jugador aquí
-			{
-				_isBeingPushed = false;
-				_pushTimer = 0.0f;
-				_velocity = Vector2.Zero;
-				GD.Print("Push ended");
-			}
-
-			Velocity = _velocity;
+			Velocity = knockbackVelocity;
 		}
+
 		if (!IsOnFloor())
 		{
-			Velocity += new Vector2(0, GetGravity().Y);
+			// La gravedad es por segundo: hay que escalarla por delta
+			Velocity += GetGravity() * (float)delta;
 		}
-		else
-		{
-			Velocity += new Vector2(0, 0);
-		}
+
+		// Único MoveAndSlide del enemigo: los estados solo asignan Velocity
 		MoveAndSlide();
-		// Aquí iría la lógica de movimiento normal del enemigo
 	}
 
+	// --- Muerte / despawn / respawn ---
+
+	public void _on_health_component_object_destroyed() => Die();
+
+	protected virtual void Die()
+	{
+		if (_isDead) return;
+		_isDead = true;
+		_knockback?.Cancel();
+		Velocity = Vector2.Zero;
+
+		if (collisionShape != null)
+		{
+			collisionShape.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+		}
+
+		SetHurtBoxActive(false);
+
+		if (GetNodeOrNull<StateMachine>("FSM") is StateMachine fsm)
+		{
+			fsm.ProcessMode = ProcessModeEnum.Disabled;
+		}
+
+		OnDeathAnimation();
+		_corpseTimer.Start();
+	}
+
+	/// Cada enemigo reproduce aquí su animación de muerte (una sola vez).
+	protected virtual void OnDeathAnimation() { }
+
+	private void OnCorpseExpired()
+	{
+		if (!_isDead) return;
+		// Despawn lógico: el cadáver desaparece y el enemigo queda dormido
+		Visible = false;
+		SetActive(false);
+	}
+
+	/// Activa/desactiva el procesamiento del enemigo (usado por RespawnManager).
+	public void SetActive(bool active)
+	{
+		ProcessMode = active ? ProcessModeEnum.Inherit : ProcessModeEnum.Disabled;
+	}
+
+	/// Restaura el enemigo a su estado inicial (usado por RespawnManager).
+	public virtual void ResetEnemy()
+	{
+		_isDead = false;
+		_knockback?.Cancel();
+		Velocity = Vector2.Zero;
+
+		Visible = true;
+		SetActive(true);
+
+		if (collisionShape != null)
+		{
+			collisionShape.SetDeferred(CollisionShape2D.PropertyName.Disabled, false);
+		}
+
+		SetHurtBoxActive(true);
+
+		if (GetParent() is PathFollow2D pathFollow)
+		{
+			pathFollow.ProgressRatio = _initialProgressRatio;
+		}
+		Position = _initialPosition;
+
+		if (GetNodeOrNull<HealthComponent>("HealthComponent") is HealthComponent healthComponent)
+		{
+			healthComponent.ResetHealth();
+		}
+
+		if (GetNodeOrNull<StateMachine>("FSM") is StateMachine fsm)
+		{
+			fsm.ProcessMode = ProcessModeEnum.Inherit;
+			fsm.ResetStateMachine();
+		}
+	}
+
+	private void SetHurtBoxActive(bool active)
+	{
+		foreach (Node child in GetChildren())
+		{
+			if (child is DamageComponent hurtBox)
+			{
+				hurtBox.SetDeferred(Area2D.PropertyName.Monitoring, active);
+				hurtBox.SetDeferred(Area2D.PropertyName.Monitorable, active);
+			}
+		}
+	}
 }

@@ -51,6 +51,7 @@
 [ext_resource type="Script" uid="uid://5d6rp3xdo6r6" path="res://Scripts/PikyStar/States/PikyStar_Attack.cs" id="47_tyhte"]
 [ext_resource type="Script" uid="uid://du6lygry8rxjj" path="res://Scenes/HealthComponent/HealthComponent.cs" id="50_5giau"]
 [ext_resource type="PackedScene" uid="uid://bbaxyok1ocfum" path="res://Scenes/DamageComponent/damage_component.tscn" id="51_7tt8x"]
+[ext_resource type="Script" path="res://Scripts/Components/KnockbackComponent.cs" id="60_kbck"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_x2bmf"]
 size = Vector2(20, 24)
@@ -539,7 +540,6 @@ size = Vector2(26, 26)
 collision_layer = 4
 collision_mask = 11
 script = ExtResource("1_1q61n")
-Health = 6
 damage = 2.0
 collisionShape = NodePath("CollisionShape2D")
 animatedSprite = NodePath("AnimationComponent/AnimatedSprite2D")
@@ -605,35 +605,31 @@ script = ExtResource("40_hoqu7")
 InitialState = NodePath("Idle")
 ControlledNode = NodePath("..")
 
-[node name="Idle" type="Node" parent="FSM" node_paths=PackedStringArray("raycast", "enemy")]
+[node name="Idle" type="Node" parent="FSM" node_paths=PackedStringArray("raycast")]
 script = ExtResource("45_t00hb")
 raycast = NodePath("../../AnimationComponent/RayCast2D")
-enemy = NodePath("../..")
 
 [node name="Timer" type="Timer" parent="FSM/Idle"]
 wait_time = 2.0
 
-[node name="Run" type="Node" parent="FSM" node_paths=PackedStringArray("enemy", "raycast")]
+[node name="Run" type="Node" parent="FSM" node_paths=PackedStringArray("raycast")]
 script = ExtResource("46_tyhte")
-enemy = NodePath("../..")
 speed = 30.0
 raycast = NodePath("../../AnimationComponent/RayCast2D")
 
 [node name="Timer" type="Timer" parent="FSM/Run"]
 wait_time = 5.0
 
-[node name="Attack" type="Node" parent="FSM" node_paths=PackedStringArray("raycast", "enemy")]
+[node name="Attack" type="Node" parent="FSM" node_paths=PackedStringArray("raycast")]
 script = ExtResource("47_tyhte")
 raycast = NodePath("../../AnimationComponent/RayCast2D")
-enemy = NodePath("../..")
 velocity = 40.0
 
 [node name="Timer" type="Timer" parent="FSM/Attack"]
 wait_time = 2.0
 
-[node name="Hit" type="Node" parent="FSM" node_paths=PackedStringArray("enemy")]
+[node name="Hit" type="Node" parent="FSM"]
 script = ExtResource("47_1q61n")
-enemy = NodePath("../..")
 
 [node name="Timer" type="Timer" parent="FSM/Hit"]
 wait_time = 0.2
@@ -642,6 +638,9 @@ wait_time = 0.2
 script = ExtResource("50_5giau")
 Health = 5
 metadata/_custom_type_script = "uid://du6lygry8rxjj"
+
+[node name="KnockbackComponent" type="Node" parent="."]
+script = ExtResource("60_kbck")
 
 [node name="hurtBox" parent="." instance=ExtResource("51_7tt8x")]
 
