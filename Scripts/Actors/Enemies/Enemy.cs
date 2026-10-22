@@ -149,9 +149,14 @@ public partial class Enemy : CharacterBody2D, IDamageable
 
 		if (GetParent() is PathFollow2D pathFollow)
 		{
+			// Bajo un PathFollow2D la posición la impone el path: restaurar el
+			// progreso basta (asignar Position además peleaba con el path)
 			pathFollow.ProgressRatio = _initialProgressRatio;
 		}
-		Position = _initialPosition;
+		else
+		{
+			Position = _initialPosition;
+		}
 
 		if (GetNodeOrNull<HealthComponent>("HealthComponent") is HealthComponent healthComponent)
 		{
