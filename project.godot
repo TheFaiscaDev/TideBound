@@ -29,6 +29,7 @@ driver/mix_rate=48000
 MouseWithJoystick="*res://Scripts/Autoload/MouseWithJoystick.cs"
 RespawnManager="*res://Scripts/Autoload/RespawnManager.cs"
 UIManager="*res://Scripts/Autoload/UIManager.cs"
+GameState="*res://Scripts/Autoload/GameState.cs"
 
 [display]
 

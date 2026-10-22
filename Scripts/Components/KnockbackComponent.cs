@@ -27,7 +27,9 @@ public partial class KnockbackComponent : Node
     public void Apply(Vector2 sourcePosition, float force, float duration)
     {
         if (_body == null) return;
-        _direction = (_body.GlobalPosition - sourcePosition).Normalized();
+        Vector2 offset = _body.GlobalPosition - sourcePosition;
+        // Guard: si origen y cuerpo coinciden, Normalized() devolvería NaN
+        _direction = offset.LengthSquared() < 0.0001f ? Vector2.Up : offset.Normalized();
         _force = force;
         _duration = duration;
         _timer = 0f;
@@ -55,8 +57,12 @@ public partial class KnockbackComponent : Node
         _timer += (float)delta;
         if (_timer >= _duration)
         {
+            // Al expirar NO devolvemos Vector2.Zero (cortaba todo el momentum,
+            // incluido el vertical, de golpe en el aire): devolvemos false y el
+            // control vuelve a la lógica de movimiento normal conservando Velocity.
             Cancel();
             velocity = Vector2.Zero;
+            return false;
         }
         return true;
     }

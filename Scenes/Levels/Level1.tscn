@@ -25,7 +25,6 @@
 [ext_resource type="PackedScene" uid="uid://b1t0mk60ypsn6" path="res://Scenes/Chest/chest.tscn" id="19_8fhce"]
 [ext_resource type="Texture2D" uid="uid://16ws7ciriwmh" path="res://Assets/ELR-WindyLeafs/ELR_SpringlLeaf.png" id="22_2oprd"]
 [ext_resource type="PackedScene" uid="uid://bbogme8t44hul" path="res://Scenes/Key/key.tscn" id="22_p6c81"]
-[ext_resource type="Script" uid="uid://cyohp3jflc2cv" path="res://Scripts/World/Water/ToxicWater.cs" id="23_rd2vd"]
 [ext_resource type="Script" uid="uid://cf1qtjwgpgwk4" path="res://Scripts/World/ZoomTrigger/ZoomTrigger.cs" id="24_xawdx"]
 [ext_resource type="Script" uid="uid://b27xl04y7k1as" path="res://Scripts/World/FadeEffect/FadeEffect.cs" id="26_efsfe"]
 [ext_resource type="AudioStream" uid="uid://b13n7eek2ofcs" path="res://Assets/Sounds/AmbientSound.wav" id="30_wspup"]
@@ -835,7 +834,6 @@ metadata/_custom_type_script = "uid://b5a7drn2phtrp"
 [node name="Area2D" type="Area2D" parent="Water2D" groups=["Water"]]
 visible = false
 collision_layer = 4
-script = ExtResource("23_rd2vd")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Water2D/Area2D"]
 position = Vector2(-0.484863, 7.2092)
@@ -858,7 +856,6 @@ metadata/_custom_type_script = "uid://b5a7drn2phtrp"
 [node name="Area2D" type="Area2D" parent="Water2D3" groups=["Water"]]
 visible = false
 collision_layer = 4
-script = ExtResource("23_rd2vd")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Water2D3/Area2D"]
 position = Vector2(-0.484863, 7.38849)
@@ -880,7 +877,6 @@ metadata/_custom_type_script = "uid://b5a7drn2phtrp"
 
 [node name="Area2D" type="Area2D" parent="Water2D2" groups=["Water"]]
 collision_layer = 4
-script = ExtResource("23_rd2vd")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Water2D2/Area2D"]
 visible = false

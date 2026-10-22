@@ -8,12 +8,11 @@ public partial class Spikes : Sprite2D
 
     public override void _Ready()
     {
-        // Set the collision shape to be the same size as the sprite
-        RectangleShape2D rectangleShape = new RectangleShape2D();
-        rectangleShape.Size = new Vector2( this.RegionRect.Size.X, this.RegionRect.Size.Y/3);
-        // Transform2D transformNode = CollisionShape.Transform;
-        // transformNode.Y = new Vector2(0, this.RegionRect.Size.Y / 12);
-        // CollisionShape.Transform = transformNode;
-        CollisionShape.Shape = rectangleShape;
+        // La hitbox cubre el tercio inferior del sprite (la base de los pinchos).
+        // Se crea una shape por instancia porque el tamaño depende del RegionRect.
+        CollisionShape.Shape = new RectangleShape2D
+        {
+            Size = new Vector2(RegionRect.Size.X, RegionRect.Size.Y / 3)
+        };
     }
 }

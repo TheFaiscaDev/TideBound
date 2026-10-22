@@ -7,10 +7,12 @@ public partial class MouseWithJoystick : Node
     public float JoystickSpeed = 200.0f;
 
     [Export]
-    public float MouseSensitivity = 80.0f;
-
-    [Export]
     public float ClampRadius = 100.0f;
+
+    // Factor de velocidad del ratón (GetLastMouseVelocity ya viene en px/s).
+    // Antes el export MouseSensitivity se sobrescribía cada frame a 200f/1f;
+    // ahora hay una constante por dispositivo y el export engañoso desaparece.
+    private const float MouseSpeedFactor = 1f;
 
     public Texture2D CustomCursorTexture;
 
@@ -29,10 +31,15 @@ public partial class MouseWithJoystick : Node
         Initialize();
     }
 
+    /// <summary>
+    /// Inicializa el cursor virtual. Es IDEMPOTENTE: puede llamarse al entrar en
+    /// cada escena (Level0/Level1) sin crear sprites de crosshair duplicados.
+    /// - Parte "por escena": re-resuelve el jugador y resetea la posición del cursor.
+    /// - Parte "una sola vez": crea el sprite solo si no existe ya uno válido.
+    /// </summary>
     public void Initialize()
     {
-
-        CustomCursorTexture = GD.Load<Texture2D>("res://Assets/Crosshair/crosshair.png");
+        CustomCursorTexture ??= GD.Load<Texture2D>("res://Assets/Crosshair/crosshair.png");
 
         var players = GetTree().GetNodesInGroup("Player");
         if (players.Count > 0 && players[0] is Node2D pNode)
@@ -50,7 +57,7 @@ public partial class MouseWithJoystick : Node
 
         Input.MouseMode = Input.MouseModeEnum.Captured;
 
-        if (CustomCursorTexture != null)
+        if (CustomCursorTexture != null && (cursorSprite == null || !GodotObject.IsInstanceValid(cursorSprite)))
         {
             cursorSprite = new Sprite2D
             {
@@ -61,9 +68,14 @@ public partial class MouseWithJoystick : Node
             cursorSprite.Scale = new Vector2(0.75f, 0.75f);
 
             AddChild(cursorSprite);
+        }
+
+        if (cursorSprite != null)
+        {
             cursorSprite.GlobalPosition = virtualCursorPosition;
             cursorSprite.Visible = true;
         }
+        inactivityTimer = 0f;
     }
 
 
@@ -110,7 +122,7 @@ public partial class MouseWithJoystick : Node
         // *** Lógica de movimiento del cursor por INPUT ***
         if (joystickMoved)
         {
-            MouseSensitivity=200f; // *** Aumenta la sensibilidad del joystick ***
+            // La velocidad del joystick la marca JoystickSpeed (export)
             Vector2 movement = joystickInput.Normalized() * JoystickSpeed * (float)delta;
             virtualCursorPosition += movement;
             IsUsingJoystick = true;
@@ -119,23 +131,21 @@ public partial class MouseWithJoystick : Node
         }
         else if (mouseMoved)
         {
-            MouseSensitivity = 1f; // *** Baja la sensibilidad del ratón ***
-            virtualCursorPosition += mouseDelta * MouseSensitivity * (float)delta;
-            IsUsingMouse = true; 
+            // GetLastMouseVelocity ya devuelve px/s: el factor del ratón es 1
+            virtualCursorPosition += mouseDelta * MouseSpeedFactor * (float)delta;
+            IsUsingMouse = true;
             IsUsingJoystick = false;
             inactivityTimer = 0f; // *** Reinicia el timer solo con input de ratón ***
         }
-      
+
 
         // *** Lógica de reset de posición al jugador si deja de usar joystick ***
-       
+
         if (IsUsingJoystick && !joystickMoved && !mouseMoved)
         {
             if (playerNode != null)
             {
                 virtualCursorPosition = playerNode.GlobalPosition;
-                inactivityTimer += (float)delta;
-            
             }
         }
 
@@ -148,7 +158,8 @@ public partial class MouseWithJoystick : Node
        
 
 
-        // LÓGICA DE CLAMP (alrededor del jugador, luego a la pantalla) - Como antes
+        // LÓGICA DE CLAMP: círculo de radio ClampRadius alrededor del jugador.
+        // (El clamp cuadrado posterior era redundante: el círculo ya está contenido en el cuadrado)
         if (playerNode != null)
         {
             Vector2 vectorToCursor = virtualCursorPosition - playerPosition;
@@ -159,15 +170,6 @@ public partial class MouseWithJoystick : Node
                 vectorToCursor = vectorToCursor.Normalized() * ClampRadius;
                 virtualCursorPosition = playerPosition + vectorToCursor;
             }
-        }
-
-        if (playerNode != null)
-        {
-            Vector2 halfArea = new Vector2(ClampRadius, ClampRadius); // Define el área cuadrada alrededor del jugador
-            Vector2 minBounds = playerNode.GlobalPosition - halfArea;
-            Vector2 maxBounds = playerNode.GlobalPosition + halfArea;
-
-            virtualCursorPosition = virtualCursorPosition.Clamp(minBounds, maxBounds);
         }
 
         // Actualiza la posición anterior del jugador
