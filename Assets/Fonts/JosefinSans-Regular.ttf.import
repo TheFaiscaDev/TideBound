@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://8go5olyked7f"
-path="res://.godot/imported/CascadiaCode.ttf-a3719bc78bb5325e1cfcc893e4ab58da.fontdata"
+uid="uid://c63w7veduabyi"
+path="res://.godot/imported/JosefinSans-Regular.ttf-c4314d1ce80b5617ddf1ccee6b29b1f1.fontdata"
 
 [deps]
 
-source_file="res://CascadiaCode.ttf"
-dest_files=["res://.godot/imported/CascadiaCode.ttf-a3719bc78bb5325e1cfcc893e4ab58da.fontdata"]
+source_file="res://Assets/Fonts/JosefinSans-Regular.ttf"
+dest_files=["res://.godot/imported/JosefinSans-Regular.ttf-c4314d1ce80b5617ddf1ccee6b29b1f1.fontdata"]
 
 [params]
 
@@ -21,6 +21,7 @@ msdf_pixel_range=8
 msdf_size=48
 allow_system_fallback=true
 force_autohinter=false
+modulate_color_glyphs=false
 hinting=1
 subpixel_positioning=4
 keep_rounding_remainders=true
