@@ -6,12 +6,13 @@ El mapa sigue una estructura interconectada con progresión basada en mejoras y 
 ### **Zona Inicial - Isla Tutorial**
 - Introduce las mecánicas básicas: movimiento, salto, ataque.
 - El jugador encuentra su primer objetivo y aprende a usar el gancho.
-- Salida bloqueada hasta conseguir el **Gancho Pirata**.
+- Aquí se obtiene el **Gancho Pirata** (el jugador ya empieza con él funcional en el build actual).
+- Salida bloqueada hasta conseguir el **Gancho Pirata**, que actúa como "examen" final del tutorial.
 
 ### **Cueva de los Ecos**
 - Oscura, con caminos alternativos y trampas.
 - Enemigos: Murciélagos y cangrejos gigantes.
-- Aquí se obtiene el **Gancho Pirata**, que permite alcanzar nuevas áreas.
+- El **Gancho Pirata** es la mecánica central de la zona: secciones que exigen dominar el balanceo para alcanzar nuevas áreas.
 
 ### **Fortaleza Pirata**
 - Vertical, llena de enemigos y patrullas.
