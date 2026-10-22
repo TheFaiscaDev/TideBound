@@ -1,6 +1,5 @@
 using Godot;
 using System;
-using System.Runtime.CompilerServices;
 
 public partial class HookComponent : Node2D
 {
@@ -34,7 +33,9 @@ public partial class HookComponent : Node2D
 
 	public override void _Input(InputEvent @event)
 	{
-		if (Input.IsActionJustPressed("hook"))
+		// Se evalúa el EVENTO concreto (no polling): Input.IsActionJustPressed dentro
+		// de _Input se re-evaluaba por cada evento de entrada del mismo frame.
+		if (@event.IsActionPressed("hook"))
 		{
 			velocity = new Vector2(parent.Velocity.X, 0);
 			if (raycast.IsColliding())
