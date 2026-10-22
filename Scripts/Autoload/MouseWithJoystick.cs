@@ -28,7 +28,13 @@ public partial class MouseWithJoystick : Node
 
     public override void _Ready()
     {
-        Initialize();
+        // Si la escena de arranque no tiene jugador (p. ej. el menú), no inicializamos:
+        // los niveles llaman a Initialize() al entrar y el _Process se auto-inicializa
+        // en cuanto aparece un jugador. Evita el falso error al arrancar en el menú.
+        if (GetTree().GetNodesInGroup("Player").Count > 0)
+        {
+            Initialize();
+        }
     }
 
     /// <summary>
@@ -95,6 +101,13 @@ public partial class MouseWithJoystick : Node
         if (playerNode != null && !GodotObject.IsInstanceValid(playerNode))
         {
             playerNode = null;
+        }
+
+        // Auto-inicialización perezosa: al entrar en una escena con jugador (aunque
+        // esa escena no llame a Initialize(), p. ej. Level0), re-resuelve todo.
+        if (playerNode == null && GetTree().GetFirstNodeInGroup("Player") is Node2D)
+        {
+            Initialize();
         }
         Vector2 joystickInput = GetJoystickMovement();
         Vector2 mouseDelta = Input.GetLastMouseVelocity();
