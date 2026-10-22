@@ -22,10 +22,11 @@ public partial class Player : CharacterBody2D, IAttackable, IHook, IDamageable
 	public AnimationNodeStateMachinePlayback fsm;
 	private HealthComponent _healthComponent;
 	private KnockbackComponent _knockback;
-	public Timer _waterCooldown;
+	private Timer _waterCooldown;
 
 	private bool died = false;
 	private TextureProgressBar progressBar;
+	private Vector2 _initialPosition;
 
 
 	public override void _Ready()
@@ -38,8 +39,19 @@ public partial class Player : CharacterBody2D, IAttackable, IHook, IDamageable
 		}
 		_knockback = GetNodeOrNull<KnockbackComponent>("KnockbackComponent");
 		_waterCooldown = GetNodeOrNull<Timer>("WaterCooldown");
+		_initialPosition = GlobalPosition;
 		// La UI se registra en el UIManager después del _Ready del jugador
 		CallDeferred(MethodName.InitHealthBar);
+		// Si hay un checkpoint guardado en ESTA escena, el jugador aparece en él
+		CallDeferred(MethodName.ApplySpawnPosition);
+	}
+
+	private void ApplySpawnPosition()
+	{
+		if (GetNodeOrNull<GameState>("/root/GameState") is GameState gameState)
+		{
+			GlobalPosition = gameState.GetRespawnPosition(GlobalPosition);
+		}
 	}
 
 	private void InitHealthBar()
@@ -90,32 +102,45 @@ public partial class Player : CharacterBody2D, IAttackable, IHook, IDamageable
 		MoveAndSlide();
 	}
 
-	private bool _isInWater = false;
+	// Contador de masas de agua que solapan al jugador (soporta aguas adyacentes:
+	// entrar en A, entrar en B y salir de A NO te saca del agua si sigues en B)
+	private int _waterAreaCount = 0;
+	public bool IsInWater => _waterAreaCount > 0;
 
 	public void ApplyToxicEffect()
 	{
+		_healthComponent?.TakeDamage(1);
+		fsm?.Travel("hit");
+	}
 
-		_healthComponent.TakeDamage(1);
-		fsm.Travel("hit");
-		if (_isInWater)
+	/// Llamado por DamageComponent al ENTRAR en una zona de agua (grupo "Water").
+	/// El daño inicial solo se aplica al pasar de 0 a 1 áreas (nunca al salir).
+	public void EnterWater()
+	{
+		_waterAreaCount++;
+		if (_waterAreaCount == 1)
 		{
-			_waterCooldown.Start();
-		}
-		else
-		{
-			_waterCooldown.Stop();
+			ApplyToxicEffect();
+			_waterCooldown?.Start(); // daño periódico mientras IsInWater
 		}
 	}
 
-	public void SwitchToWater()
+	/// Llamado por DamageComponent al SALIR de una zona de agua (grupo "Water").
+	public void ExitWater()
 	{
-		_isInWater = !_isInWater;
-		ApplyToxicEffect();
+		_waterAreaCount = Mathf.Max(_waterAreaCount - 1, 0);
+		if (_waterAreaCount == 0)
+		{
+			_waterCooldown?.Stop();
+		}
 	}
 
 	public void OnWaterCooldownTimeout()
 	{
-		ApplyToxicEffect();
+		if (IsInWater)
+		{
+			ApplyToxicEffect();
+		}
 	}
 	// --- IDamageable ---
 
@@ -135,21 +160,80 @@ public partial class Player : CharacterBody2D, IAttackable, IHook, IDamageable
 	{
 		if (died) return;
 
-		GetNode("MovementComponent").QueueFree();
-		GetNode("HookComponent").QueueFree();
-		GetNode("HurtBox").QueueFree();
+		// Los componentes se DESACTIVAN (no se liberan) para poder respawnear sin recargar la escena
+		SetComponentsActive(false);
 		this.SetCollisionMaskValue(3, false);
 		died = true;
 		fsm.Travel("dead");
 
-		// Tras la animación de muerte, recargamos la escena (respawn del jugador)
+		// Tras la animación de muerte: fade y respawn en el último checkpoint
 		GetTree().CreateTimer(2.0).Timeout += () =>
 		{
 			if (GodotObject.IsInstanceValid(this))
 			{
-				GetTree().ReloadCurrentScene();
+				RespawnAtCheckpoint();
 			}
 		};
+	}
+
+	private void SetComponentsActive(bool active)
+	{
+		foreach (string nodeName in new[] { "MovementComponent", "HookComponent", "HurtBox" })
+		{
+			Node node = GetNodeOrNull(nodeName);
+			if (node == null)
+			{
+				GD.PushError($"Player: no se encontró el nodo hijo '{nodeName}'.");
+				continue;
+			}
+			node.ProcessMode = active ? ProcessModeEnum.Inherit : ProcessModeEnum.Disabled;
+			if (node is Area2D area)
+			{
+				area.SetDeferred(Area2D.PropertyName.Monitoring, active);
+				area.SetDeferred(Area2D.PropertyName.Monitorable, active);
+			}
+		}
+	}
+
+	private void RespawnAtCheckpoint()
+	{
+		FadeEffect fade = GetNodeOrNull<UIManager>("/root/UIManager")?.Fade;
+		if (fade != null)
+		{
+			fade.FadedToBlack += OnDeathFadedToBlack;
+			fade.FadeToBlack();
+		}
+		else
+		{
+			OnDeathFadedToBlack();
+		}
+	}
+
+	private void OnDeathFadedToBlack()
+	{
+		FadeEffect fade = GetNodeOrNull<UIManager>("/root/UIManager")?.Fade;
+		if (fade != null)
+		{
+			fade.FadedToBlack -= OnDeathFadedToBlack;
+		}
+
+		// Respawn en el último checkpoint de esta escena (o en el spawn inicial del nivel)
+		Vector2 respawnPosition = _initialPosition;
+		if (GetNodeOrNull<GameState>("/root/GameState") is GameState gameState)
+		{
+			respawnPosition = gameState.GetRespawnPosition(_initialPosition);
+		}
+
+		GlobalPosition = respawnPosition;
+		Velocity = Vector2.Zero;
+		_healthComponent?.ResetHealth();
+		_waterAreaCount = 0;
+		_waterCooldown?.Stop();
+		died = false;
+		SetComponentsActive(true);
+		this.SetCollisionMaskValue(3, true);
+		fsm.Travel("idle");
+		fade?.FadeFromBlack();
 	}
 	public void OnHealthComponentHealthChanged(int newHealth)
 	{

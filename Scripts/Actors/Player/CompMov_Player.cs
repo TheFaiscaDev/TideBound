@@ -14,6 +14,8 @@ public partial class CompMov_Player : Node2D
 	private float lowJumpMultiplier = 1.7f;
 	private float coyoteTime = 0.1f;
 	private float jumpBufferTime = 0.1f;
+	// Velocidad terminal de caída: evita aceleración ilimitada (y tunneling en caídas largas)
+	private float maxFallSpeed = 400f;
 
 	private float coyoteTimeCounter = 0f;
 	private float jumpBufferCounter = 0f;
@@ -44,15 +46,17 @@ public partial class CompMov_Player : Node2D
 	{
 		if (parent is IAttackable parentAttack)
 		{
-
 			if (Input.IsActionPressed("attack") && !parentAttack.IsAttacking)
 			{
 				parentAttack.IsAttacking = true;
 				fsm.Travel("attack1");
 			}
-			if (parent.IsOnCeiling() && velocity.Y < 0)
+			// El ataque se libera al TERMINAR su animación (cuando la FSM visual sale
+			// de "attack1"), no solo al quedarse quieto en el suelo: antes podía
+			// quedarse bloqueado atacando en movimiento.
+			if (parentAttack.IsAttacking && fsm.GetCurrentNode() != "attack1")
 			{
-				velocity.Y = 0;
+				parentAttack.IsAttacking = false;
 			}
 		}
 	}
@@ -73,7 +77,17 @@ public partial class CompMov_Player : Node2D
 		{
 			if (parentHook.IsHooked)
 			{
-				// Cancelar movimiento normal
+				// Saltar enganchado CANCELA el gancho con impulso (game feel péndulo):
+				// se conserva el momentum horizontal del balanceo.
+				if (Input.IsActionJustPressed("jump"))
+				{
+					parentHook.IsHooked = false;
+					velocity = parent.Velocity;
+					velocity.Y = jumpVelocity;
+					parent.Velocity = velocity;
+					fsm.Travel("jump");
+				}
+				// Cancelar movimiento normal mientras se está enganchado
 				return;
 			}
 		}
@@ -93,6 +107,8 @@ public partial class CompMov_Player : Node2D
 			{
 				// 🔹 Lerp para suavizar la caída
 				velocity.Y = Mathf.Lerp(velocity.Y, velocity.Y + parent.GetGravity().Y * fallMultiplier, 0.75f * delta);
+				// Velocidad terminal de caída (anti-tunneling en caídas largas)
+				velocity.Y = Mathf.Min(velocity.Y, maxFallSpeed);
 				if (fsm.GetCurrentNode() != "fall")
 				{
 					fsm.Travel("fall");
@@ -141,8 +157,9 @@ public partial class CompMov_Player : Node2D
 		{
 			if (coyoteTimeCounter > 0 || canDoubleJump)
 			{
-				// isHooked = false; TODO:Ver esta mierda
-				velocity.Y = Mathf.Lerp(parent.Velocity.Y, jumpVelocity, 65f * delta);
+				// Impulso directo: el Lerp con peso 65*delta (~1,08 a 60 fps) extrapolaba
+				// y sobrepasaba jumpVelocity; funcionaba "por accidente".
+				velocity.Y = jumpVelocity;
 				jumpBufferCounter = 0;
 				coyoteTimeCounter = 0;
 
@@ -156,6 +173,12 @@ public partial class CompMov_Player : Node2D
 					fsm.Travel("jump");
 				}
 			}
+		}
+
+		// Chequeo de techo (lógica de movimiento; antes vivía dentro de Attack())
+		if (parent.IsOnCeiling() && velocity.Y < 0)
+		{
+			velocity.Y = 0;
 		}
 
 		if (direction.X != 0)

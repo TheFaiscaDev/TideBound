@@ -10,11 +10,15 @@ public partial class ItemCollector : Area2D
     {
         UserInterface ui = GetUI();
         if (ui == null) return;
+        GameState gameState = GetNodeOrNull<GameState>("/root/GameState");
 
-        // Recolección type-safe: cada item sabe destruirse/abrirse a sí mismo
+        // Recolección type-safe: cada item sabe destruirse/abrirse a sí mismo.
+        // Los items recogidos se marcan en GameState por su ID único (NodePath)
+        // para que no reaparezcan al recargar la escena.
         switch (body)
         {
             case Key key when !ui.HasKey:
+                gameState?.MarkItemCollected(key.GetPath());
                 key.Destroy();
                 ui.SetKey(true);
                 break;
@@ -25,6 +29,7 @@ public partial class ItemCollector : Area2D
                 }
                 break;
             case Coin coin:
+                gameState?.MarkItemCollected(coin.GetPath());
                 coin.Destroy();
                 ui.AddCoins(1);
                 break;

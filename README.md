@@ -259,14 +259,14 @@ https://github.com/user-attachments/assets/2b0041ee-7ff2-4bcf-a25b-5fdd719b7e5f
 
 1. Clonar el repositorio:
    ```bash
-   git clone https://github.com/VioletGminisJ25/PirateGame.git
+   git clone https://github.com/TheFaiscaDev/TideBound.git
    ```
 2. Importar el proyecto en *Godot* (versión 4.x).
 3. Ejecutar el juego desde el editor.
 
 ## 🏗️ Contribuciones
 
-Si deseas contribuir con ideas, código o reportes de errores, siéntete libre de abrir un *issue* o enviar un *pull request* en [el repositorio](https://github.com/VioletGminisJ25/PirateGame).
+Si deseas contribuir con ideas, código o reportes de errores, siéntete libre de abrir un *issue* o enviar un *pull request* en [el repositorio](https://github.com/TheFaiscaDev/TideBound).
 
 ## 📜 Licencia
 

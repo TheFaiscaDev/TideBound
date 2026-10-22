@@ -10,8 +10,9 @@ Esta guía explica **paso a paso** cómo crear cualquier elemento del juego (ene
 Scripts/
 ├── Actors/            # Entidades con comportamiento propio (se mueven, actúan)
 │   ├── Player/        # Player.cs, CompMov_Player.cs, HookComponent.cs, LineRope/
-│   └── Enemies/       # Enemy.cs (base) + una carpeta por enemigo
-│       ├── PinkyStar/ # PinkyStar.cs + States/ (sus estados)
+│   └── Enemies/       # Enemy.cs (base) + States/ (estados genéricos) + una carpeta por enemigo
+│       ├── States/    # Estados genéricos: PatrolPathState, TimedIdleState, HitStunState, MeleeAttackState
+│       ├── PinkyStar/ # PinkyStar.cs + States/ (subclases finas de los genéricos)
 │       └── BigRed/
 ├── Components/        # Piezas reutilizables que se enchufan a cualquier nodo
 │   ├── HealthComponent.cs
@@ -20,7 +21,7 @@ Scripts/
 │   └── ItemCollector.cs
 ├── Interfaces/        # Contratos C# (IDamageable, IAttackable, IHook)
 ├── StateMachine/      # StateMachine.cs y State.cs (genéricos, no se tocan)
-├── Autoload/          # Singletons: RespawnManager, UIManager, MouseWithJoystick
+├── Autoload/          # Singletons: RespawnManager, UIManager, MouseWithJoystick, GameState
 ├── UI/                # UserInterface.cs, Menu.cs
 ├── Items/             # Objetos interactivos: Coin, Key, Chest, Box
 ├── World/             # Elementos del escenario: Camera, Spikes, FadeArea, ZoomTrigger...

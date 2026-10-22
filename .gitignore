@@ -2,5 +2,15 @@
 .godot/
 /android/
 .vs/
-assets/addons/godot-git-plugin/win64/~libgit_plugin.windows.editor.x86_64.dll
+Assets/addons/godot-git-plugin/win64/~libgit_plugin.windows.editor.x86_64.dll
 launch.json
+
+# Builds exportadas (usar GitHub Releases para distribuir binarios)
+Output/
+
+# Artefactos de compilación .NET
+bin/
+obj/
+
+# Backups del .csproj generados por Godot
+*.csproj.old*

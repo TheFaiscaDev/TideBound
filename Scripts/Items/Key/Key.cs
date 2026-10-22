@@ -3,52 +3,52 @@ using System;
 
 public partial class Key : RigidBody2D
 {
-    AnimatedSprite2D animatedSprite;
-    AnimationPlayer player;
-    Godot.Vector2 INITIAL_VELOCITY;
-    // Called when the node enters the scene tree for the first time.
+    private AnimatedSprite2D animatedSprite;
+    private AnimationPlayer player;
+    private bool _destroying = false;
+
     public override void _Ready()
     {
-        for (int i = 0; i < this.GetChildCount(); i++)
+        // Si la llave ya se recogió en esta partida, no reaparece (persistencia GameState)
+        if (GetNodeOrNull<GameState>("/root/GameState") is GameState gameState
+            && gameState.IsItemCollected(GetPath()))
         {
-            if (this.GetChild(i) is AnimatedSprite2D)
-            {
-                animatedSprite = (AnimatedSprite2D)(this.GetChild(i));
-            }
+            QueueFree();
+            return;
+        }
 
-        }
-        for (int j = 0; j < animatedSprite.GetChildCount(); j++)
+        animatedSprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+        player = animatedSprite?.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
+        if (animatedSprite == null || player == null)
         {
-            if (animatedSprite.GetChild(j) is AnimationPlayer)
-            {
-                {
-                    player = (AnimationPlayer)(animatedSprite.GetChild(j));
-                }
-            }
+            GD.PushError($"Key '{Name}': falta el nodo AnimatedSprite2D o su AnimationPlayer hijo.");
+            return;
         }
-        INITIAL_VELOCITY = this.LinearVelocity;
         player.Play("idle");
-    }
-
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
-    {
-
     }
 
     public void OnBodyEntered(Node2D body)
     {
         if (body is Player)
         {
-            player.Stop();
+            player?.Stop();
         }
     }
 
     public void Destroy()
     {
-        QueueFree();
+        if (_destroying)
+        {
+            return;
+        }
+        _destroying = true;
+        // Detiene la física y reproduce la animación de recogida (con partículas);
+        // el nodo se libera en OnAnimationFinished (señal conectada en key.tscn)
+        Freeze = true;
+        player?.Play("destroy");
     }
-    public void OnAnimationFinished(String animName)
+
+    public void OnAnimationFinished(StringName animName)
     {
         if (animName == "destroy")
         {

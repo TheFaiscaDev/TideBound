@@ -1,7 +1,16 @@
 using Godot;
 using System;
 
-[Tool]
+/// <summary>
+/// Hurtbox genérica (Area2D): el padre es quien recibe el daño.
+/// Responsabilidades actuales:
+/// 1. Contacto con enemigos → daño + knockback al padre (type-safe vía IDamageable).
+/// 2. Pinchos (grupo "Spikes") → fade y teletransporte al Marker2D de respawn.
+///    NOTA DE DISEÑO: es intencionado que los pinchos NO quiten vida, solo reposicionan.
+/// 3. Agua (grupo "Water") → notifica al jugador con EnterWater/ExitWater explícitos
+///    (el daño inicial solo ocurre al entrar; ver Player.EnterWater).
+/// Pendiente: separar pinchos y agua en scripts propios.
+/// </summary>
 [GlobalClass]
 public partial class DamageComponent : Area2D
 {
@@ -16,7 +25,8 @@ public partial class DamageComponent : Area2D
 
 	public void OnBodyEntered(Node2D body)
 	{
-		if(body.IsInGroup("Spikes")){
+		if (body.IsInGroup("Spikes"))
+		{
 			_respawnMarker = body.GetParent().GetNodeOrNull<Marker2D>("Marker2D");
 			if (Fade != null && _respawnMarker != null)
 			{
@@ -27,55 +37,49 @@ public partial class DamageComponent : Area2D
 		}
 		if (body.IsInGroup("Enemy"))
 		{
-			if (body is Enemy enemy)
-			{
-				DamageAmount = enemy.damage;
-			}
+			// El daño lo define el enemigo que toca; DamageAmount queda como fallback
+			// (no se muta el export: era estado compartido confuso entre enemigos)
+			double damage = body is Enemy enemy ? enemy.damage : DamageAmount;
 			// El padre de esta hurtbox es quien recibe el daño (type-safe)
 			if (GetParent() is IDamageable target)
 			{
-				target.TakeDamage((int)DamageAmount);
-				EmitSignal(SignalName.TakeDamage, DamageAmount);
+				target.TakeDamage((int)damage);
+				EmitSignal(SignalName.TakeDamage, damage);
 				target.ApplyKnockback(body.GlobalPosition, PushForce, PushDuration);
 			}
 		}
+	}
 
-
+	public void OnAreaEntered(Area2D area)
+	{
+		if (area.IsInGroup("Water"))
+		{
+			if (GetParent() is Player player)
+			{
+				player.CallDeferred(Player.MethodName.EnterWater);
+			}
+			else
+			{
+				GD.PushError("DamageComponent: el padre no es un Player; no puede entrar en agua.");
+			}
+		}
 	}
 
 	public void OnAreaExited(Area2D area)
 	{
 		if (area.IsInGroup("Water"))
 		{
-			if (GetParent().HasMethod("SwitchToWater"))
+			if (GetParent() is Player player)
 			{
-				GetParent<Node2D>().CallDeferred("SwitchToWater");
-				// El cooldown de agua solo existe en el jugador
-				if (GetParent() is Player player && player._waterCooldown != null)
-				{
-					player._waterCooldown.Stop();
-				}
+				player.CallDeferred(Player.MethodName.ExitWater);
 			}
 			else
 			{
-				GD.PushError("Parent does not have SwitchToWater method.");
+				GD.PushError("DamageComponent: el padre no es un Player; no puede salir del agua.");
 			}
 		}
 	}
-	public void OnAreaEntered(Area2D area)
-	{
-		if (area.IsInGroup("Water"))
-		{
-			if (GetParent().HasMethod("SwitchToWater"))
-			{
-				GetParent<Node2D>().CallDeferred("SwitchToWater");
-			}
-			else
-			{
-				GD.PushError("Parent does not have SwitchToWater method.");
-			}
-		}
-	}
+
 	private void OnFadedToBlack()
 	{
 		// Reposicionar jugador al marker
